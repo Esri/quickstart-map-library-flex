@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<esri:Map xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
+          xmlns:mx="library://ns.adobe.com/flex/mx"
+          xmlns:esri="http://www.esri.com/2008/ags"
+          xmlns:model="com.esri.model.*"
+          xmlns:views="com.esri.views.*"
+          xmlns:controllers="com.esri.controllers.*"
+          openHandCursorVisible="false"
+          wrapAround180="true">
+    <fx:Metadata>
+        [Event(name="fault", type="mx.rpc.events.FaultEvent")]
+        [Event(name="addressToLocationsComplete", type="com.esri.ags.events.LocatorEvent")]
+        [Event(name="locationToAddressComplete", type="com.esri.ags.events.LocatorEvent")]
+    </fx:Metadata>
+    <fx:Declarations>
+        <!-- The application model -->
+        <model:Model id="model">
+            <model:baseLayers>
+                <s:ArrayList>
+                    <model:BaseLayer label="Streets"
+                           url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"/>
+                    <model:BaseLayer label="Aerial"
+                           url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
+                    <model:BaseLayer label="Topo" 
+                           url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"/>
+                </s:ArrayList>
+            </model:baseLayers>
+        </model:Model>
+        <!-- View declaration -->
+        <views:BaseLayerView id="baseLayerView"
+                             right="10" top="10"
+                             model="{model}"/>
+        <!-- Contollers -->
+        <controllers:ClearController id="clearController" model="{model}"/>
+        <controllers:LatLonController id="latLonController" model="{model}"/>
+        <controllers:LocateController id="locateController"
+                                      map="{this}"
+                                      model="{model}"/>
+        <controllers:RouteController id="routeController"
+                                     map="{this}"
+                                     model="{model}"/>
+    </fx:Declarations>
+    <fx:Script>
+        <![CDATA[
+            import com.esri.ags.Graphic;
+            import com.esri.ags.geometry.MapPoint;
+            import com.esri.ags.geometry.WebMercatorMapPoint;
+            import com.esri.ags.symbols.Symbol;
+
+            import mx.core.UIComponent;
+            import mx.rpc.Fault;
+            import mx.rpc.IResponder;
+            import mx.rpc.events.FaultEvent;
+
+            /**
+             * @private
+             */
+            override protected function createChildren():void
+            {
+                super.createChildren();
+                this.staticLayer.addElement(baseLayerView);
+            }
+
+            /**
+             * Add a point location on the map for given latitude and longitude values.
+             *
+             * @param lat the location latitude (vertical or y value)
+             * @param lon the location longitude (horizontal or x value)
+             * @param symbol optional symbol used to render the location.
+             * @return Graphic instance placed on the map.
+             */
+            public function addLatLon(lat:Number, lon:Number, symbol:Symbol = null):Graphic
+            {
+                return latLonController.addLatLon(lat, lon, symbol);
+            }
+
+            /**
+             * Add a set of geographical coordinates points on the map.
+             *
+             * @param source array of geograhical coordinates (x is longitude, y is latitude).
+             * An array item can be an instance of MapPoint or an instance of Array where the first item is the latitude and the second item is the longitude.
+             * @param symbol optional symbol used to render the points.
+             *
+             * @return Array of Graphic instances.
+             *
+             * @example Add a set of geographical coordinates points on the map.
+             * <listing version="3.0">
+             * myMap.addLatLons( new MapPoint(lon1, lat1), [lat2, lon2]);
+             * </listing>
+             */
+            public function addLatLons(points:Array):Array /*<Graphic>*/
+            {
+                return latLonController.addLatLons(points);
+            }
+
+            /**
+             * Draw a line on the map given a set of geographical coordinates (lat/lon) points.
+             *
+             * @param points Array of MapPoint instances where the x and y value of each map point define the longitude (x) and latitude (y) values.
+             * @param symbol optional symbol used to render the line.
+             * @return Graphic instance of the drawn line.
+             */
+            public function addLine(points:Array, symbol:Symbol = null):Graphic
+            {
+                return latLonController.addLine(points, symbol);
+            }
+
+            /**
+             * Draw a polygon on the map given a set of geographical coordinates (lat/lon) points.
+             *
+             * @param points Array of MapPoint instances where the x and y value of each map point define the longitude (x) and latitude (y) values.
+             * @param symbol optional symbol used to render the polygon.
+             * @return Graphic instance of the drawn polygon.
+             */
+            public function addPolygon(points:Array /*<MapPoint>*/, symbol:Symbol = null):Graphic
+            {
+                return latLonController.addPolygon(points, symbol);
+            }
+
+            /**
+             * Convert a single line address (ie 380 New York Street, 92373) to a point location on the map and
+             * zooms the map to that location if the mapLevel parameter is greater than -1.
+             *
+             * @param address Single line address - The default locator is based on the United States streets. <a href="http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Streets_US_10/GeocodeServer">http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Streets_US_10/GeocodeServer</a>.
+             * @param mapLevel optional map level (0-14) to zoom to when an address is located - by default value is -1 indicating to not zoom the map.
+             */
+            public function addressToLocation(address:String, mapLevel:int = -1):void
+            {
+                locateController.addressToLocation(address, mapLevel);
+            }
+
+            /**
+             * Locates an address based on a given point.
+             *
+             * @param location The point at which to search for the closest address.
+             * @param distance The distance in meters from the given location within which a matching address should be searched. If this parameter is not provided or an invalid value is provided, a default value of 30 meters is used.
+             */
+            public function locationToAddress(mapPoint:MapPoint, distance:Number = 30.0):void
+            {
+                locateController.locationToAddress(mapPoint, distance);
+            }
+
+            /**
+             * Clear all graphics overlays on the map.
+             */
+            public function clearAll():void
+            {
+                clearController.clearAll();
+            }
+
+            /**
+             * Clear all polygon overlays.
+             */
+            public function clearPolygons():void
+            {
+                clearController.clearPolygons();
+            }
+
+            /**
+             * Clear all polyline overlays.
+             */
+            public function clearPolylines():void
+            {
+                clearController.clearPolylines();
+            }
+
+            /**
+             * Clear all point overlays.
+             */
+            public function clearPoints():void
+            {
+                clearController.clearPoints();
+            }
+
+            /**
+             * Show the route of given set of points.
+             *
+             * @param source array of locations. a location could be an instance of String indicating an address, or an instance of MapPoint or an instance of Graphic.
+             * @param zoomFactor the factor to use to expand the resulting route extent to become the map extent.
+             * @param responder optional responder.
+             */
+            public function route(source:Array = null, zoomFactor:Number = 2.0, responder:IResponder = null):void
+            {
+                routeController.route(source, zoomFactor, responder);
+            }
+
+            /**
+             * Show info window at specified latitude and longitude.
+             *
+             * @param lat the lattitude (y) location
+             * @param lon the longitude (x) location
+             * @param content a ui component subclass.
+             * @param label option info window label
+             */
+            public function showInfoWindow(lat:Number, lon:Number, content:UIComponent, label:String = null):void
+            {
+                infoWindowContent = content;
+                infoWindow.label = label;
+                infoWindow.show(new WebMercatorMapPoint(lon, lat));
+            }
+
+            /**
+             * Hide the info window.
+             */
+            public function hideInfoWindow():void
+            {
+                infoWindow.hide();
+            }
+
+            public function whereAmI(zoomLevel:int = 16):void
+            {
+                if (hasEventListener(FaultEvent.FAULT))
+                {
+                    dispatchEvent(new FaultEvent(FaultEvent.FAULT, false, true, new Fault('geoLocationNotSupported', 'Geolocation is not supported')));
+                }
+            }
+
+            public function driveTimePolygon(times:Array, center:MapPoint = null):void
+            {
+                // TODO
+            }
+        ]]>
+    </fx:Script>
+    <!-- Base layer -->
+    <esri:ArcGISTiledMapServiceLayer id="basemap" url="{model.baseLayerURL}"/>
+    <!-- Polygon layer -->
+    <esri:GraphicsLayer id="polygonLayer" graphicProvider="{model.polygonArrCol}">
+        <esri:symbol>
+            <esri:SimpleFillSymbol id="polygonSymbol"
+                                   alpha="0.5"
+                                   color="red">
+                <esri:outline>
+                    <esri:SimpleLineSymbol width="2"
+                                           alpha="1"
+                                           color="red"/>
+                </esri:outline>
+            </esri:SimpleFillSymbol>
+        </esri:symbol>
+    </esri:GraphicsLayer>
+    <!-- Polyline layer -->
+    <esri:GraphicsLayer id="polylineLayer" graphicProvider="{model.polylineArrCol}">
+        <esri:symbol>
+            <esri:CartographicLineSymbol id="polylineSymbol"
+                                         width="8"
+                                         alpha="0.5"
+                                         cap="round"
+                                         color="green"/>
+        </esri:symbol>
+    </esri:GraphicsLayer>
+    <!-- Point layer -->
+    <esri:GraphicsLayer id="pointLayer" graphicProvider="{model.pointArrCol}">
+        <esri:symbol>
+            <views:BitmapSymbol id="pointSymbol"
+                                hotSpotX="10"
+                                hotSpotY="32"
+                                source="@Embed('/assets/marker.png')"/>
+        </esri:symbol>
+    </esri:GraphicsLayer>
+</esri:Map>

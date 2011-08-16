@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<views:ESRIMap xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               xmlns:views="com.esri.views.*"
+               xmlns:controllers="com.esri.controllers.*"
+               zoomSliderVisible="false">
+    <fx:Metadata>
+        [Event(name="geolocationUpdate", type="com.esri.events.GeolocationUpdateEvent")]        
+    </fx:Metadata>
+    <fx:Declarations>
+        <controllers:GeoLocationController id="geoLocation"
+                                           map="{this}"
+                                           model="{model}"/>
+    </fx:Declarations>
+    <fx:Script>
+        <![CDATA[
+            import mx.rpc.IResponder;
+
+            /**
+             * Locate where you are based on the Geolocation API if available and not muted.
+             * For Android devices make sure to enable fine location in the xxxx-app.xml file as follows:
+             * <p>
+             * &lt;uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/&gt;
+             * </p>
+             */
+            override public function whereAmI(zoomLevel:int = 16):void
+            {
+                geoLocation.whereAmI(zoomLevel);
+            }
+        ]]>
+    </fx:Script>
+</views:ESRIMap>

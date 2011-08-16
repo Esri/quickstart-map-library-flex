@@ -1,0 +1,14 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace views "com.esri.views.*";
+
+views|BaseLayerView
+{
+    skinClass: ClassReference("com.esri.skins.BaseLayerViewSkin");
+}
+
+views|AddrInfo
+{
+    skinClass: ClassReference("com.esri.skins.AddrInfoSkin");
+}
