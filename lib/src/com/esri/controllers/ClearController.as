@@ -3,6 +3,9 @@ package com.esri.controllers
 
 import com.esri.model.Model;
 
+/**
+ * Clear all graphics elements from Graphics Layers
+ */
 public final class ClearController
 {
     [Bindable]
