@@ -1,0 +1,57 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace esri "http://www.esri.com/2008/ags";
+
+esri|InfoWindow
+{
+    skinClass: ClassReference("com.esri.ags.skins.InfoWindowSkin");
+    paddingLeft: 1;
+    paddingRight: 1;
+    paddingTop: 1;
+    paddingBottom: 1;
+    backgroundColor: #CCCCCC;
+    backgroundAlpha: 0.6;
+    borderThickness: 2;
+    borderColor: #000000;
+    borderAlpha: 1.0;
+    upperLeftRadius: 5;
+    upperRightRadius: 5;
+    lowerLeftRadius: 5;
+    lowerRightRadius: 5;
+    infoPlacementMode: auto;
+    infoPlacement: top;
+    infoOffsetX: 10;
+    infoOffsetY: 30;
+    infoOffsetW: 5;
+    shadowDistance: 0.0;
+    shadowAlpha: 1.0;
+    shadowAngle: 45.0;
+    shadowColor: #000000;
+}
+
+esri|InfoSymbolWindow
+{
+    skinClass: ClassReference("com.esri.ags.skins.InfoSymbolWindowSkin");
+    paddingLeft: 1;
+    paddingRight: 1;
+    paddingTop: 1;
+    paddingBottom: 1;
+    backgroundColor: #CCCCCC;
+    backgroundAlpha: 0.5;
+    borderThickness: 2;
+    borderColor: #000000;
+    borderAlpha: 1.0;
+    upperLeftRadius: 5;
+    upperRightRadius: 5;
+    lowerLeftRadius: 5;
+    lowerRightRadius: 5;
+    infoPlacementMode: auto;
+    infoPlacement: top;
+    infoOffsetX: 10;
+    infoOffsetY: 30;
+    infoOffsetW: 5;
+    shadowDistance: 0.0;
+    shadowAlpha: 1.0;
+    shadowAngle: 45.0;
+    shadowColor: #000000;
+}

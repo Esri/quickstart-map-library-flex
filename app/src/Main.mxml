@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx"
+               xmlns:views="com.esri.views.*">
+    <fx:Style source="stylesheet.css"/>
+    <fx:Script>
+        <![CDATA[
+            import com.esri.ags.events.LocatorEvent;
+            import com.esri.ags.events.MapMouseEvent;
+
+            import mx.controls.Alert;
+            import mx.rpc.AsyncResponder;
+            import mx.rpc.events.FaultEvent;
+
+            private var m_count:int = 0;
+
+            private function route_clickHandler(event:MouseEvent):void
+            {
+                map.route();
+            }
+
+            private function address_clickHandler(address:String):void
+            {
+                map.addressToLocation(address, 13);
+            }
+
+            private function addr2addr_clickHandler(event:MouseEvent):void
+            {
+                map.route([ '55 Ferncroft Road,01923', '21 Hickory Drive,02451' ]);
+            }
+
+            private function mapClickToAddress_clickHandler(event:MouseEvent):void
+            {
+                map.addEventListener(MapMouseEvent.MAP_CLICK, map_mapClickHandler);
+            }
+
+            private function map_mapClickHandler(event:MapMouseEvent):void
+            {
+                map.removeEventListener(MapMouseEvent.MAP_CLICK, map_mapClickHandler);
+                map.locationToAddress(event.mapPoint, 40);
+            }
+
+            private function addLatLon_clickHandler(event:MouseEvent):void
+            {
+                map.addLatLon(33.8761165 /*Lat/Y*/, 35.512619 /*Lon/X*/);
+            }
+
+            private function drawLine_clickHandler(event:MouseEvent):void
+            {
+                map.addLine([ /* [lat,lon] */
+                            [ 50, 45 ],
+                            [ -50, -45 ]
+                            ]);
+            }
+
+            private function infoWindow_clickHandler(event:MouseEvent):void
+            {
+                map.showInfoWindow(34.215992, 36.062588, cedars, 'Cedars Of Lebanon');
+            }
+
+            private function clear_clickHandler(event:MouseEvent):void
+            {
+                map.clearAll();
+                m_count = 0;
+            }
+
+            private function map_locationToAddressCompleteHandler(event:LocatorEvent):void
+            {
+                m_count++;
+                if (m_count > 1)
+                {
+                    map.route();
+                }
+            }
+        ]]>
+    </fx:Script>
+    <fx:Declarations>
+        <s:Image id="cedars" source="@Embed('/assets/cedars_of_lebanon.jpg')"/>
+    </fx:Declarations>
+    <s:layout>
+        <s:VerticalLayout gap="0"/>
+    </s:layout>
+    <views:ESRIMap id="map"
+                   level="2"
+                   locationToAddressComplete="map_locationToAddressCompleteHandler(event)"/>
+    <s:HGroup width="100%" verticalAlign="middle">
+        <s:Button click="addLatLon_clickHandler(event)" label="Add Lat/Lon"/>
+        <s:Button click="drawLine_clickHandler(event)" label="Draw Line"/>
+        <s:Button click="address_clickHandler('55 Ferncroft Road,01923')" label="Esri"/>
+        <s:Button click="address_clickHandler('21 Hickory Drive,02451')" label="Adobe"/>
+        <s:Button click="addr2addr_clickHandler(event)" label="Address to Address"/>
+        <s:Button click="mapClickToAddress_clickHandler(event)"
+                  label="Map Click To Address"
+                  toolTip="Zoom to a US street segment and click on the map"/>
+        <s:Button click="infoWindow_clickHandler(event)" label="Info Window"/>
+        <s:Spacer width="100%"/>
+        <s:Button click="clear_clickHandler(event)" label="Clear"/>
+        <s:Button click="route_clickHandler(event)" label="Route"/>
+    </s:HGroup>
+</s:Application>

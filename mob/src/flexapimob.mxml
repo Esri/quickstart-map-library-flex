@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:views="com.esri.views.*">
+    <fx:Style source="stylesheet.css"/>
+    <fx:Script>
+        <![CDATA[
+            import com.esri.ags.events.MapEvent;
+            import com.esri.events.GeolocationUpdateEvent;
+
+            private function map_geolocationUpdateHandler(event:GeolocationUpdateEvent):void
+            {
+                map.locationToAddress(event.mapPoint, 50.0);
+            }
+
+            private function map_loadHandler(event:MapEvent):void
+            {
+                map.whereAmI();
+            }
+        ]]>
+    </fx:Script>
+    <views:ESRIMobileMap id="map"
+                         geolocationUpdate="map_geolocationUpdateHandler(event)"
+                         load="map_loadHandler(event)"/>
+</s:Application>
