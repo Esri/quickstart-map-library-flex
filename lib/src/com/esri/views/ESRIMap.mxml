@@ -80,9 +80,12 @@
                 else
                 {
                     const arr:Array = location as Array;
-                    const lat:Number = arr[0];
-                    const lon:Number = arr[1];
-                    centerAt(new WebMercatorMapPoint(lon, lat));
+                    if (arr)
+                    {
+                        const lat:Number = arr[0];
+                        const lon:Number = arr[1];
+                        centerAt(new WebMercatorMapPoint(lon, lat));
+                    }
                 }
                 this.level = zoomLevel;
                 switch (mapType)
@@ -132,9 +135,9 @@
              * myMap.addLatLons( new MapPoint(lon1, lat1), [lat2, lon2]);
              * </listing>
              */
-            public function addLatLons(points:Array):Array /*<Graphic>*/
+            public function addLatLons(source:Array, symbol:Symbol = null):Array /*<Graphic>*/
             {
-                return latLonController.addLatLons(points);
+                return latLonController.addLatLons(source, symbol);
             }
 
             /**
