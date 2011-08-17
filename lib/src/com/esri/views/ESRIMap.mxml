@@ -18,11 +18,11 @@
         <model:Model id="model">
             <model:baseLayers>
                 <s:ArrayList>
-                    <model:BaseLayer label="Streets"
+                    <model:BaseLayer id="streets" label="Streets"
                            url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"/>
-                    <model:BaseLayer label="Aerial"
+                    <model:BaseLayer id="aerial" label="Aerial"
                            url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
-                    <model:BaseLayer label="Topo" 
+                    <model:BaseLayer id="topo" label="Topo" 
                            url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"/>
                 </s:ArrayList>
             </model:baseLayers>
@@ -60,6 +60,49 @@
             {
                 super.createChildren();
                 this.staticLayer.addElement(baseLayerView);
+            }
+
+            /**
+             * Center the map at a specific location.
+             *
+             * @param location the center location. Can be an instance of MapPoint or an array of two points where the first item is the latitude and the second is the logitude.
+             * @param zoomLevel optional zoom level
+             * @param mapType optional map type.
+             *
+             */
+            public function setCenter(location:Object, zoomLevel:int = 14, mapType:String = MapType.STREETS):void
+            {
+                const mapPoint:MapPoint = location as MapPoint;
+                if (mapPoint)
+                {
+                    centerAt(new WebMercatorMapPoint(mapPoint.x, mapPoint.y));
+                }
+                else
+                {
+                    const arr:Array = location as Array;
+                    const lat:Number = arr[0];
+                    const lon:Number = arr[1];
+                    centerAt(new WebMercatorMapPoint(lon, lat));
+                }
+                this.level = zoomLevel;
+                switch (mapType)
+                {
+                    case MapType.STREETS:
+                    {
+                        model.baseLayerURL = streets.url;
+                        break;
+                    }
+                    case MapType.AERIAL:
+                    {
+                        model.baseLayerURL = aerial.url;
+                        break;
+                    }
+                    case MapType.TOPO:
+                    {
+                        model.baseLayerURL = top.url;
+                        break;
+                    }
+                }
             }
 
             /**
