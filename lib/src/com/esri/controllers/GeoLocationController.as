@@ -48,6 +48,7 @@ public final class GeoLocationController
             {
                 m_geoLocation = new Geolocation();
             }
+            /*
             if (m_geoLocation.muted)
             {
                 if (map.hasEventListener(FaultEvent.FAULT))
@@ -57,25 +58,29 @@ public final class GeoLocationController
             }
             else
             {
-                m_geoLocation.addEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
+            */
+            m_geoLocation.removeEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
+            m_geoLocation.addEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
 
-                function geoLocation_updateHandler(event:GeolocationEvent):void
+            function geoLocation_updateHandler(event:GeolocationEvent):void
+            {
+                m_geoLocation.removeEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
+                const mapPoint:WebMercatorMapPoint = new WebMercatorMapPoint(event.longitude, event.latitude);
+                const feature:Graphic = new Graphic(mapPoint, getSymbol(), event);
+                model.pointArrCol.addItem(feature);
+                if (zoomLevel > -1)
                 {
-                    m_geoLocation.removeEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
-                    const mapPoint:WebMercatorMapPoint = new WebMercatorMapPoint(event.longitude, event.latitude);
-                    const feature:Graphic = new Graphic(mapPoint, getSymbol(), event);
-                    model.pointArrCol.addItem(feature);
-                    if (zoomLevel > -1)
-                    {
-                        map.centerAt(mapPoint);
-                        map.level = zoomLevel;
-                    }
-                    if (map.hasEventListener(GeolocationUpdateEvent.GEOLOCATION_UPDATE))
-                    {
-                        map.dispatchEvent(new GeolocationUpdateEvent(GeolocationUpdateEvent.GEOLOCATION_UPDATE, false, false, feature, event.latitude, event.longitude, event.altitude, event.horizontalAccuracy, event.verticalAccuracy, event.speed, event.heading, event.timestamp));
-                    }
+                    map.centerAt(mapPoint);
+                    map.level = zoomLevel;
+                }
+                if (map.hasEventListener(GeolocationUpdateEvent.GEOLOCATION_UPDATE))
+                {
+                    map.dispatchEvent(new GeolocationUpdateEvent(GeolocationUpdateEvent.GEOLOCATION_UPDATE, false, false, feature, event.latitude, event.longitude, event.altitude, event.horizontalAccuracy, event.verticalAccuracy, event.speed, event.heading, event.timestamp));
                 }
             }
+            /*
+            }
+            */
         }
         else if (map.hasEventListener(FaultEvent.FAULT))
         {
