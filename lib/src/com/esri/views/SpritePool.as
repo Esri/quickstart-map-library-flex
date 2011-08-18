@@ -3,6 +3,9 @@ package com.esri.views
 
 import flash.display.Sprite;
 
+/**
+ * @private
+ */
 internal final class SpritePool
 {
     private var m_vec:Vector.<Sprite> = new Vector.<Sprite>();

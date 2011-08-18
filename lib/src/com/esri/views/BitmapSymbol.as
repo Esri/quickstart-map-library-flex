@@ -17,6 +17,9 @@ import flash.utils.Dictionary;
 
 use namespace esri_internal;
 
+/**
+ * @private
+ */
 public class BitmapSymbol extends Symbol
 {
     private static const BITMAP_DATA_DICT:Dictionary = new Dictionary();

@@ -7,6 +7,9 @@ import spark.components.supportClasses.ButtonBarBase;
 import spark.components.supportClasses.SkinnableComponent;
 import spark.events.IndexChangeEvent;
 
+/**
+ * @private
+ */
 public class BaseLayerView extends SkinnableComponent
 {
     [Bindable]

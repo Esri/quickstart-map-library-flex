@@ -48,17 +48,6 @@ public final class GeoLocationController
             {
                 m_geoLocation = new Geolocation();
             }
-            /*
-            if (m_geoLocation.muted)
-            {
-                if (map.hasEventListener(FaultEvent.FAULT))
-                {
-                    map.dispatchEvent(new FaultEvent(FaultEvent.FAULT, false, true, new Fault('geoLocationMuted', 'Geolocation is muted')));
-                }
-            }
-            else
-            {
-            */
             m_geoLocation.removeEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
             m_geoLocation.addEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
 
@@ -78,9 +67,6 @@ public final class GeoLocationController
                     map.dispatchEvent(new GeolocationUpdateEvent(GeolocationUpdateEvent.GEOLOCATION_UPDATE, false, false, feature, event.latitude, event.longitude, event.altitude, event.horizontalAccuracy, event.verticalAccuracy, event.speed, event.heading, event.timestamp));
                 }
             }
-            /*
-            }
-            */
         }
         else if (map.hasEventListener(FaultEvent.FAULT))
         {

@@ -10,6 +10,9 @@ import spark.components.supportClasses.SkinnableComponent;
 
 [SkinState("normal")]
 [SkinState("hovered")]
+/**
+ * @private
+ */
 public class AddrInfo extends SkinnableComponent implements IDataRenderer
 {
 
