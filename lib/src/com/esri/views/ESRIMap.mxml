@@ -254,17 +254,15 @@
                 infoWindow.hide();
             }
 
+            /**
+             * Invokes Geolocation API to locate where you are.
+             */
             public function whereAmI(zoomLevel:int = 16):void
             {
                 if (hasEventListener(FaultEvent.FAULT))
                 {
                     dispatchEvent(new FaultEvent(FaultEvent.FAULT, false, true, new Fault('geoLocationNotSupported', 'Geolocation is not supported')));
                 }
-            }
-
-            public function driveTimePolygon(times:Array, center:MapPoint = null):void
-            {
-                // TODO
             }
         ]]>
     </fx:Script>
