@@ -18,25 +18,31 @@
 -->
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
                xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:mx="library://ns.adobe.com/flex/mx"
                xmlns:views="com.esri.views.*">
-    <fx:Style source="stylesheet.css"/>
     <fx:Script>
         <![CDATA[
             import com.esri.ags.events.MapEvent;
-            import com.esri.events.GeolocationUpdateEvent;
-
-            private function map_geolocationUpdateHandler(event:GeolocationUpdateEvent):void
-            {
-                map.locationToAddress(event.mapPoint, 50.0);
-            }
+            import com.esri.ags.events.MapMouseEvent;
 
             private function map_loadHandler(event:MapEvent):void
             {
-                map.whereAmI();
+                map.setCenter([ 40.736072, -73.992062 ])
+            }
+
+            private function map_mapClickHandler(event:MapMouseEvent):void
+            {
+                map.clearAll();
+                map.addPoint(event.mapPoint);
+                map.calculateDriveTimePolygon(event.mapPoint, [ 1, 3, 5 ]);
             }
         ]]>
     </fx:Script>
-    <views:ESRIMobileMap id="map"
-                         geolocationUpdate="map_geolocationUpdateHandler(event)"
-                         load="map_loadHandler(event)"/>
+    <views:ESRIMap id="map"
+                   load="map_loadHandler(event)"
+                   mapClick="map_mapClickHandler(event)"/>
+    <s:Label bottom="10"
+             fontSize="32"
+             horizontalCenter="0"
+             text="Click on the map to see 1,3,5 min drives from that location"/>
 </s:Application>

@@ -1,3 +1,18 @@
+///////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2010-2011 Esri. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and 
+// limitations under the License.
+///////////////////////////////////////////////////////////////////////////
 package com.esri.controllers
 {
 
@@ -114,52 +129,8 @@ public final class RouteController implements IMXMLObject
         }
     }
 
-    /*
-    private function toNetworkAttributes(orig:Object, i:int):Object
-    {
-        const dest:Object = {};
-        if (orig)
-        {
-            if (orig.hasOwnProperty('Address'))
-            {
-                dest.Name = orig.Address;
-            }
-            else if (orig.hasOwnProperty('Label'))
-            {
-                dest.Name = orig.Label;
-            }
-            else if (orig.hasOwnProperty('Name'))
-            {
-                dest.Name = orig.Name;
-            }
-            else if (orig.hasOwnProperty('Location'))
-            {
-                dest.Name = orig.Location;
-            }
-            else if (orig.hasOwnProperty('Stop'))
-            {
-                dest.Name = orig.Stop;
-            }
-        }
-        else
-        {
-            dest.Name = 'Stop' + i;
-        }
-        return dest;
-    }
-    */
-
     private function toFeatureSet():FeatureSet
     {
-        /*
-        const i:int = 0;
-        const dest:Array = [];
-        for each (var feature:Graphic in model.pointArrCol.source)
-        {
-            dest.push(new Graphic(feature.geometry, feature.symbol, toNetworkAttributes(feature.attributes, i++)));
-        }
-        return new FeatureSet(dest);
-        */
         return new FeatureSet(model.pointArrCol.toArray());
     }
 

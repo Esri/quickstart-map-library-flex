@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+///////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2010-2011 Esri. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+///////////////////////////////////////////////////////////////////////////
+-->
 <esri:Map xmlns:fx="http://ns.adobe.com/mxml/2009"
           xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:mx="library://ns.adobe.com/flex/mx"
@@ -40,6 +57,9 @@
         <controllers:RouteController id="routeController"
                                      map="{this}"
                                      model="{model}"/>
+        <controllers:DriveTimeController id="driveTimeController"
+                                         map="{this}"
+                                         model="{model}"/>
     </fx:Declarations>
     <fx:Script>
         <![CDATA[
@@ -65,7 +85,7 @@
             /**
              * Center the map at a specific location.
              *
-             * @param location the center location. Can be an instance of MapPoint or an array of two points where the first item is the latitude and the second is the logitude.
+             * @param location the center location. Can be an instance of MapPoint or an array of two points where the first item is the latitude and the second is the longitude.
              * @param zoomLevel optional zoom level
              * @param mapType optional map type.
              *
@@ -106,6 +126,19 @@
                         break;
                     }
                 }
+            }
+
+            /**
+             * Add a point to the map.
+             *
+             * @param point the point to add, can be an instance of MapPoint or an array in the form [lat,lon]
+             * @param symbol optional symbol used to render the point.
+             *
+             * @return Graphic instance placed on the map.
+             */
+            public function addPoint(point:Object, symbol:Symbol = null):Graphic
+            {
+                return latLonController.addPoint(point, symbol);
             }
 
             /**
@@ -169,11 +202,11 @@
              * zooms the map to that location if the mapLevel parameter is greater than -1.
              *
              * @param address Single line address - The default locator is based on the United States streets. <a href="http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Streets_US_10/GeocodeServer">http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Streets_US_10/GeocodeServer</a>.
-             * @param mapLevel optional map level (0-14) to zoom to when an address is located - by default value is -1 indicating to not zoom the map.
+             * @param zoomLevel optional map level (0-14) to zoom to when an address is located - by default value is -1 indicating to not zoom the map.
              */
-            public function addressToLocation(address:String, mapLevel:int = -1):void
+            public function addressToLocation(address:String, zoomLevel:int = -1):void
             {
-                locateController.addressToLocation(address, mapLevel);
+                locateController.addressToLocation(address, zoomLevel);
             }
 
             /**
@@ -263,6 +296,19 @@
                 {
                     dispatchEvent(new FaultEvent(FaultEvent.FAULT, false, true, new Fault('geoLocationNotSupported', 'Geolocation is not supported')));
                 }
+            }
+
+            /**
+             * Show areas that are covered by driving away from a specified points based on street network, not has the crow flies.
+             * This internally invokes a Geoprocessing task - this is where Esri shines :-)
+             *
+             * @param fromLocation the center location from where to drive out. This can be an instance of MapPoint or and an array of the form [lat,lon].
+             * @param driveTimesInMinutes array of number indicating the number of polygon to generate.
+             * @param responder Optional responder.
+             */
+            public function calculateDriveTimePolygon(fromLocation:Object, driveTimesInMinutes:Array, responder:IResponder = null):void
+            {
+                driveTimeController.calculateDriveTimePolygon(fromLocation, driveTimesInMinutes, responder);
             }
         ]]>
     </fx:Script>
