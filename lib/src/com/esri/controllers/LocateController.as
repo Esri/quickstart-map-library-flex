@@ -30,8 +30,6 @@ import com.esri.ags.utils.WebMercatorUtil;
 import com.esri.model.Model;
 import com.esri.views.AddrSymbol;
 
-import flash.events.Event;
-
 import mx.rpc.events.FaultEvent;
 
 use namespace esri_internal;
@@ -50,14 +48,6 @@ public final class LocateController
      */
     public var model:Model;
 
-    private function mapDispatchEvent(event:Event):void
-    {
-        if (map.hasEventListener(event.type))
-        {
-            map.dispatchEvent(event);
-        }
-    }
-
     public function addressToLocation(address:String, mapLevel:int = -1):void
     {
         const param:Object = {};
@@ -73,6 +63,14 @@ public final class LocateController
 
         function locator_addressToLocationsCompleteHandler(event:LocatorEvent):void
         {
+            if (map.hasEventListener(event.type))
+            {
+                map.dispatchEvent(event);
+                if (event.isDefaultPrevented())
+                {
+                    return;
+                }
+            }
             if (locator.addressToLocationsLastResult && locator.addressToLocationsLastResult.length)
             {
                 const addrCand:AddressCandidate = locator.addressToLocationsLastResult[0];
@@ -85,12 +83,14 @@ public final class LocateController
                     map.level = mapLevel;
                 }
             }
-            mapDispatchEvent(event);
         }
 
         function faultHandler(event:FaultEvent):void
         {
-            mapDispatchEvent(event);
+            if (map.hasEventListener(event.type))
+            {
+                map.dispatchEvent(event);
+            }
         }
 
     }
@@ -108,6 +108,14 @@ public final class LocateController
 
         function locationToAddressCompleteHandler(event:LocatorEvent):void
         {
+            if (map.hasEventListener(event.type))
+            {
+                map.dispatchEvent(event);
+                if (event.isDefaultPrevented())
+                {
+                    return;
+                }
+            }
             if (locator.locationToAddressLastResult)
             {
                 const attributes:Object = locator.locationToAddressLastResult.address;
@@ -135,13 +143,19 @@ public final class LocateController
             {
                 addNoAddr();
             }
-            mapDispatchEvent(event);
         }
 
         function faultHandler(event:FaultEvent):void
         {
+            if (map.hasEventListener(event.type))
+            {
+                map.dispatchEvent(event);
+                if (event.isDefaultPrevented())
+                {
+                    return;
+                }
+            }
             addNoAddr();
-            mapDispatchEvent(event);
         }
 
         function addNoAddr():void

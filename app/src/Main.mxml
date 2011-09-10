@@ -26,19 +26,17 @@
             import com.esri.ags.events.LocatorEvent;
             import com.esri.ags.events.MapMouseEvent;
 
-            import mx.controls.Alert;
-            import mx.rpc.AsyncResponder;
-            import mx.rpc.events.FaultEvent;
-
             private var m_count:int = 0;
 
             private function route_clickHandler(event:MouseEvent):void
             {
+                // Create a route for all map points on the map.
                 map.route();
             }
 
             private function address_clickHandler(address:String):void
             {
+                // Convert an address to a map location and set the zoom level to 13 (street level)
                 map.addressToLocation(address, 13);
             }
 
@@ -55,6 +53,7 @@
             private function map_mapClickHandler(event:MapMouseEvent):void
             {
                 map.removeEventListener(MapMouseEvent.MAP_CLICK, map_mapClickHandler);
+                // Find the address within 40 meters from the clicked location.
                 map.locationToAddress(event.mapPoint, 40);
             }
 

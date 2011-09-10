@@ -16,14 +16,26 @@
 package com.esri.model
 {
 
+import com.esri.views.MapType;
+
 [Bindable]
 public final class BaseLayer
 {
-    public var label:String;
-    public var url:String;
+    public static const STREETS:BaseLayer = new BaseLayer("Streets", MapType.STREETS);
+    public static const AERIAL:BaseLayer = new BaseLayer("Aerial", MapType.AERIAL);
+    public static const TOPO:BaseLayer = new BaseLayer("Topo", MapType.TOPO);
+    public static const TOPO_US:BaseLayer = new BaseLayer("Topo US", MapType.TOPO_US);
+    public static const TERRAIN:BaseLayer = new BaseLayer("Terrain", MapType.TERRAIN);
+    public static const OCEAN:BaseLayer = new BaseLayer("Ocean", MapType.OCEAN);
+    public static const OPEN_STREET_MAP:BaseLayer = new BaseLayer("Open Street Map", MapType.OPEN_STREET_MAP);
 
-    public function BaseLayer()
+    public var label:String;
+    public var mapType:String;
+
+    public function BaseLayer(label:String = null, mapType:String = null)
     {
+        this.label = label;
+        this.mapType = mapType;
     }
 }
 }

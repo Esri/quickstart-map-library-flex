@@ -18,9 +18,10 @@ package com.esri.views
 
 import com.esri.model.Model;
 
-import spark.components.supportClasses.ButtonBarBase;
+import flash.events.MouseEvent;
+
+import spark.components.supportClasses.ListBase;
 import spark.components.supportClasses.SkinnableComponent;
-import spark.events.IndexChangeEvent;
 
 /**
  * @private
@@ -31,32 +32,18 @@ public class BaseLayerView extends SkinnableComponent
     public var model:Model;
 
     [SkinPart]
-    public var buttonBar:ButtonBarBase;
+    public var buttonBar:ListBase;
 
     public function BaseLayerView()
     {
+        addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
     }
 
-    override protected function partAdded(partName:String, instance:Object):void
+    private function mouseDownHandler(event:MouseEvent):void
     {
-        super.partAdded(partName, instance);
-        if (instance === buttonBar)
+        if (event.currentTarget === this)
         {
-            buttonBar.addEventListener(IndexChangeEvent.CHANGE, buttonBar_changeHandler);
-        }
-    }
-
-    private function buttonBar_changeHandler(event:IndexChangeEvent):void
-    {
-        model.baseLayerURL = model.baseLayers.getItemAt(event.newIndex).url;
-    }
-
-    override protected function partRemoved(partName:String, instance:Object):void
-    {
-        super.partRemoved(partName, instance);
-        if (instance === buttonBar)
-        {
-            buttonBar.removeEventListener(IndexChangeEvent.CHANGE, buttonBar_changeHandler);
+            event.stopImmediatePropagation(); // Prevent a map click event from dispatching
         }
     }
 

@@ -23,6 +23,7 @@
         [HostComponent("com.esri.views.BaseLayerView")]
     </fx:Metadata>
     <s:ButtonBar id="buttonBar"
-                 dataProvider="{hostComponent.model.baseLayers}"
-                 requireSelection="true"/>
+                 dataProvider="{hostComponent.model.baseLayerProvider}"
+                 requireSelection="true"
+                 selectedItem="@{hostComponent.model.baseLayer}"/>
 </s:Skin>

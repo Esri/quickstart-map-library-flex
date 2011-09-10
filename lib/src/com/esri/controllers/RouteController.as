@@ -33,10 +33,8 @@ import com.esri.ags.tasks.supportClasses.RouteResult;
 import com.esri.model.Model;
 
 import flash.events.MouseEvent;
-import flash.geom.Orientation3D;
 
 import mx.core.IMXMLObject;
-import mx.graphics.GradientBase;
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
 
@@ -157,6 +155,14 @@ public final class RouteController implements IMXMLObject
 
         function routeTask_solveCompleteHandler(event:RouteEvent):void
         {
+            if (map.hasEventListener(event.type))
+            {
+                map.dispatchEvent(event);
+                if (event.isDefaultPrevented())
+                {
+                    return;
+                }
+            }
             removeOldSegments();
             if (event.routeSolveResult.routeResults.length)
             {

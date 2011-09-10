@@ -111,6 +111,7 @@ public final class LatLonController
                 dest.push(toMercatorPoint(mapPoint));
                 continue;
             }
+            // Assuming that we now have an array with two items [lat,lon]
             const arr:Array = obj as Array;
             if (arr)
             {

@@ -22,7 +22,6 @@ import com.esri.ags.esri_internal;
 import com.esri.ags.events.GeoprocessorEvent;
 import com.esri.ags.geometry.Extent;
 import com.esri.ags.geometry.MapPoint;
-import com.esri.ags.geometry.WebMercatorMapPoint;
 import com.esri.ags.symbols.SimpleFillSymbol;
 import com.esri.ags.tasks.Geoprocessor;
 import com.esri.ags.utils.WebMercatorUtil;
@@ -93,8 +92,17 @@ public final class DriveTimeController
 
     private function gp_executeCompleteHandler(event:GeoprocessorEvent):void
     {
+        CursorManager.removeBusyCursor();
+        if (map.hasEventListener(event.type))
+        {
+            map.dispatchEvent(event);
+            if (event.isDefaultPrevented())
+            {
+                return;
+            }
+        }
         const extent:Extent = map.extent.duplicate();
-        const colors:Array = [ 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF ];
+        const colors:Array = [ 0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF ]; // TODO - make nicer colors !!
         const gp:Geoprocessor = event.target as Geoprocessor;
         const featureSet:FeatureSet = gp.executeLastResultFirstFeatureSet;
         const index:int = 0;
@@ -106,16 +114,15 @@ public final class DriveTimeController
             extent.unionExtent(feature.geometry.extent);
         }
         map.extent = extent.expand(1.5);
-        CursorManager.removeBusyCursor();
     }
 
     private function gp_faultHandler(event:FaultEvent):void
     {
+        CursorManager.removeBusyCursor();
         if (map.hasEventListener(event.type))
         {
             map.dispatchEvent(event);
         }
-        CursorManager.removeBusyCursor();
     }
 }
 }

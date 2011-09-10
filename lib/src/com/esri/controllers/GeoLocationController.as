@@ -63,6 +63,7 @@ public final class GeoLocationController
             {
                 m_geoLocation = new Geolocation();
             }
+
             m_geoLocation.removeEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
             m_geoLocation.addEventListener(GeolocationEvent.UPDATE, geoLocation_updateHandler);
 

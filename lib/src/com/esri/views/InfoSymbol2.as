@@ -33,6 +33,11 @@ import mx.core.IVisualElement;
 
 use namespace esri_internal;
 
+/**
+ * This will be removed when Esri will publish a non-halo depend version of InfoSymbol (which will be pretty soon :-)
+ *
+ * @private
+ */
 public class InfoSymbol2 extends Symbol
 {
     private static const EXTENT:Extent = new Extent();

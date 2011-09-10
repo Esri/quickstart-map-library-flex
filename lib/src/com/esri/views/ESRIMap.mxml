@@ -29,28 +29,23 @@
         [Event(name="fault", type="mx.rpc.events.FaultEvent")]
         [Event(name="addressToLocationsComplete", type="com.esri.ags.events.LocatorEvent")]
         [Event(name="locationToAddressComplete", type="com.esri.ags.events.LocatorEvent")]
+        [Event(name="solveComplete", type="com.esri.ags.events.RouteEvent")]
+        [Event(name="executeComplete", type="com.esri.ags.events.GeoprocessorEvent")]
     </fx:Metadata>
     <fx:Declarations>
         <!-- The application model -->
-        <model:Model id="model">
-            <model:baseLayers>
-                <s:ArrayList>
-                    <model:BaseLayer id="streets" label="Streets"
-                           url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"/>
-                    <model:BaseLayer id="aerial" label="Aerial"
-                           url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"/>
-                    <model:BaseLayer id="topo" label="Topo" 
-                           url="http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"/>
-                </s:ArrayList>
-            </model:baseLayers>
-        </model:Model>
+        <model:Model id="model"/>
         <!-- View declaration -->
         <views:BaseLayerView id="baseLayerView"
                              right="10" top="10"
                              model="{model}"/>
+        <views:OpenStreetMapText id="openStreetMapText"
+                                 includeInLayout="{model.openStreetMapLayerVisible}"
+                                 visible="{model.openStreetMapLayerVisible}"/>
         <!-- Contollers -->
         <controllers:ClearController id="clearController" model="{model}"/>
-        <controllers:LatLonController id="latLonController" model="{model}"/>
+        <controllers:MapTypeController id="mapTypeController" model="{model}"/>
+        <controllers:LatLonController id="latlonController" model="{model}"/>
         <controllers:LocateController id="locateController"
                                       map="{this}"
                                       model="{model}"/>
@@ -79,15 +74,28 @@
             override protected function createChildren():void
             {
                 super.createChildren();
+                // Added UI layer switch to the top right corner of the map 
                 this.staticLayer.addElement(baseLayerView);
+                // Add the open street map copyright lingo at bottom and show it only when the map type is openStreetMap.
+                this.staticLayer.addElement(openStreetMapText);
+            }
+
+            /**
+             * Set the base map type.
+             * @param mapType The map type (eg. MapType.STREETS).
+             * @see MapType
+             */
+            public function setMapType(mapType:String):void
+            {
+                mapTypeController.setMapType(mapType);
             }
 
             /**
              * Center the map at a specific location.
              *
-             * @param location the center location. Can be an instance of MapPoint or an array of two points where the first item is the latitude and the second is the longitude.
-             * @param zoomLevel optional zoom level
-             * @param mapType optional map type.
+             * @param location The center location. Can be an instance of MapPoint or an array of two points where the first item is the latitude and the second is the longitude.
+             * @param zoomLevel [optional] The zoom level
+             * @param mapType [optional] The map type (eg. MapType.STREETS)
              *
              */
             public function setCenter(location:Object, zoomLevel:int = 14, mapType:String = MapType.STREETS):void
@@ -108,58 +116,41 @@
                     }
                 }
                 this.level = zoomLevel;
-                switch (mapType)
-                {
-                    case MapType.STREETS:
-                    {
-                        model.baseLayerURL = streets.url;
-                        break;
-                    }
-                    case MapType.AERIAL:
-                    {
-                        model.baseLayerURL = aerial.url;
-                        break;
-                    }
-                    case MapType.TOPO:
-                    {
-                        model.baseLayerURL = top.url;
-                        break;
-                    }
-                }
+                mapTypeController.setMapType(mapType);
             }
 
             /**
              * Add a point to the map.
              *
-             * @param point the point to add, can be an instance of MapPoint or an array in the form [lat,lon]
-             * @param symbol optional symbol used to render the point.
+             * @param point The point to add, can be an instance of MapPoint or an array in the form [lat,lon]
+             * @param symbol [optional] The symbol used to render the point.
              *
              * @return Graphic instance placed on the map.
              */
             public function addPoint(point:Object, symbol:Symbol = null):Graphic
             {
-                return latLonController.addPoint(point, symbol);
+                return latlonController.addPoint(point, symbol);
             }
 
             /**
              * Add a point location on the map for given latitude and longitude values.
              *
-             * @param lat the location latitude (vertical or y value)
-             * @param lon the location longitude (horizontal or x value)
-             * @param symbol optional symbol used to render the location.
+             * @param lat The location latitude (vertical or y value)
+             * @param lon The location longitude (horizontal or x value)
+             * @param symbol [optional] The symbol used to render the location.
              * @return Graphic instance placed on the map.
              */
             public function addLatLon(lat:Number, lon:Number, symbol:Symbol = null):Graphic
             {
-                return latLonController.addLatLon(lat, lon, symbol);
+                return latlonController.addLatLon(lat, lon, symbol);
             }
 
             /**
              * Add a set of geographical coordinates points on the map.
              *
-             * @param source array of geograhical coordinates (x is longitude, y is latitude).
+             * @param source Array of geograhical coordinates (x is longitude, y is latitude).
              * An array item can be an instance of MapPoint or an instance of Array where the first item is the latitude and the second item is the longitude.
-             * @param symbol optional symbol used to render the points.
+             * @param symbol [optional] The symbol used to render the points.
              *
              * @return Array of Graphic instances.
              *
@@ -170,39 +161,39 @@
              */
             public function addLatLons(source:Array, symbol:Symbol = null):Array /*<Graphic>*/
             {
-                return latLonController.addLatLons(source, symbol);
+                return latlonController.addLatLons(source, symbol);
             }
 
             /**
              * Draw a line on the map given a set of geographical coordinates (lat/lon) points.
              *
              * @param points Array of MapPoint instances where the x and y value of each map point define the longitude (x) and latitude (y) values.
-             * @param symbol optional symbol used to render the line.
+             * @param symbol [optional] The symbol used to render the line.
              * @return Graphic instance of the drawn line.
              */
             public function addLine(points:Array, symbol:Symbol = null):Graphic
             {
-                return latLonController.addLine(points, symbol);
+                return latlonController.addLine(points, symbol);
             }
 
             /**
              * Draw a polygon on the map given a set of geographical coordinates (lat/lon) points.
              *
              * @param points Array of MapPoint instances where the x and y value of each map point define the longitude (x) and latitude (y) values.
-             * @param symbol optional symbol used to render the polygon.
+             * @param symbol [optional] The symbol used to render the polygon.
              * @return Graphic instance of the drawn polygon.
              */
             public function addPolygon(points:Array /*<MapPoint>*/, symbol:Symbol = null):Graphic
             {
-                return latLonController.addPolygon(points, symbol);
+                return latlonController.addPolygon(points, symbol);
             }
 
             /**
              * Convert a single line address (ie 380 New York Street, 92373) to a point location on the map and
-             * zooms the map to that location if the mapLevel parameter is greater than -1.
+             * zooms the map to that location if the zoomLevel parameter is greater than -1.
              *
              * @param address Single line address - The default locator is based on the United States streets. <a href="http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Streets_US_10/GeocodeServer">http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Streets_US_10/GeocodeServer</a>.
-             * @param zoomLevel optional map level (0-14) to zoom to when an address is located - by default value is -1 indicating to not zoom the map.
+             * @param zoomLevel [optional] The map zoom level (0-14) to zoom to when an address is located - by default value is -1 indicating to not zoom the map.
              */
             public function addressToLocation(address:String, zoomLevel:int = -1):void
             {
@@ -214,6 +205,7 @@
              *
              * @param location The point at which to search for the closest address.
              * @param distance The distance in meters from the given location within which a matching address should be searched. If this parameter is not provided or an invalid value is provided, a default value of 30 meters is used.
+             * @TODO - handle location as [lat,lon]
              */
             public function locationToAddress(mapPoint:MapPoint, distance:Number = 30.0):void
             {
@@ -229,7 +221,7 @@
             }
 
             /**
-             * Clear all polygon overlays.
+             * Clear all polygon graphics.
              */
             public function clearPolygons():void
             {
@@ -237,7 +229,7 @@
             }
 
             /**
-             * Clear all polyline overlays.
+             * Clear all polyline graphics.
              */
             public function clearPolylines():void
             {
@@ -245,7 +237,7 @@
             }
 
             /**
-             * Clear all point overlays.
+             * Clear all point graphics.
              */
             public function clearPoints():void
             {
@@ -255,9 +247,9 @@
             /**
              * Show the route of given set of points.
              *
-             * @param source array of locations. a location could be an instance of String indicating an address, or an instance of MapPoint or an instance of Graphic.
-             * @param zoomFactor the factor to use to expand the resulting route extent to become the map extent.
-             * @param responder optional responder.
+             * @param source Array of locations. a location could be an instance of String indicating an address, or an instance of MapPoint or an instance of Graphic.
+             * @param zoomFactor The factor to use to expand the resulting route extent to become the map extent.
+             * @param responder [optional] The responder to call on result or fault.
              */
             public function route(source:Array = null, zoomFactor:Number = 2.0, responder:IResponder = null):void
             {
@@ -267,10 +259,10 @@
             /**
              * Show info window at specified latitude and longitude.
              *
-             * @param lat the lattitude (y) location
-             * @param lon the longitude (x) location
-             * @param content a ui component subclass.
-             * @param label option info window label
+             * @param lat The lattitude (y) location.
+             * @param lon The longitude (x) location.
+             * @param content A ui component subclass.
+             * @param label [optional] The info window label.
              */
             public function showInfoWindow(lat:Number, lon:Number, content:UIComponent, label:String = null):void
             {
@@ -289,6 +281,7 @@
 
             /**
              * Invokes Geolocation API to locate where you are.
+             * @param zoomLevel the zoomLevel. A value of zero shows the world,
              */
             public function whereAmI(zoomLevel:int = 16):void
             {
@@ -304,7 +297,7 @@
              *
              * @param fromLocation the center location from where to drive out. This can be an instance of MapPoint or and an array of the form [lat,lon].
              * @param driveTimesInMinutes array of number indicating the number of polygon to generate.
-             * @param responder Optional responder.
+             * @param responder [optional] The responder to call on result or fault.
              */
             public function calculateDriveTimePolygon(fromLocation:Object, driveTimesInMinutes:Array, responder:IResponder = null):void
             {
@@ -312,8 +305,11 @@
             }
         ]]>
     </fx:Script>
-    <!-- Base layer -->
-    <esri:ArcGISTiledMapServiceLayer id="basemap" url="{model.baseLayerURL}"/>
+    <!-- Base layers -->
+    <esri:ArcGISTiledMapServiceLayer id="arcgisTiledMapServiceLayer"
+                                     url="{model.arcgisTiledMapServiceLayerURL}"
+                                     visible="{model.arcgisTiledMapServiceLayerVisible}"/>
+    <esri:OpenStreetMapLayer id="openStreetMap" visible="{model.openStreetMapLayerVisible}"/>
     <!-- Polygon layer -->
     <esri:GraphicsLayer id="polygonLayer" graphicProvider="{model.polygonArrCol}">
         <esri:symbol>

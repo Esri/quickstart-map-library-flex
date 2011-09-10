@@ -18,17 +18,16 @@ package com.esri.model
 
 import mx.collections.ArrayCollection;
 import mx.collections.ArrayList;
-import mx.core.IMXMLObject;
 
-public final class Model implements IMXMLObject
+public final class Model
 {
-    public var requestTimeout:int = 30;
-
     public const polygonArrCol:ArrayCollection = new ArrayCollection();
 
     public const polylineArrCol:ArrayCollection = new ArrayCollection();
 
     public const pointArrCol:ArrayCollection = new ArrayCollection();
+
+    public var requestTimeout:int = 30; // In Seconds
 
     public var locatorURL:String = 'http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Address_NA_10/GeocodeServer';
     public var locatorKey:String = 'SingleLine';
@@ -37,21 +36,22 @@ public final class Model implements IMXMLObject
     public var routeTaskURL:String = 'http://tasks.arcgisonline.com/ArcGIS/rest/services/NetworkAnalysis/ESRI_Route_NA/NAServer/Route';
 
     [Bindable]
-    public var baseLayers:ArrayList;
+    public var baseLayerProvider:ArrayList = new ArrayList([ BaseLayer.STREETS, BaseLayer.AERIAL, BaseLayer.OPEN_STREET_MAP ]); // Out of the box layers to be displayed on top right corner
 
     [Bindable]
-    public var baseLayerURL:String;
+    public var baseLayer:BaseLayer = BaseLayer.STREETS;
+
+    [Bindable]
+    public var arcgisTiledMapServiceLayerURL:String = BaseLayer.STREETS.mapType;
+
+    [Bindable]
+    public var arcgisTiledMapServiceLayerVisible:Boolean = true;
+
+    [Bindable]
+    public var openStreetMapLayerVisible:Boolean = false;
 
     public function Model()
     {
-    }
-
-    public function initialized(document:Object, id:String):void
-    {
-        if (baseLayers && baseLayers.length)
-        {
-            baseLayerURL = baseLayers.getItemAt(0).url;
-        }
     }
 }
 }

@@ -21,9 +21,19 @@ package com.esri.views
  */
 public final class MapType
 {
-    public static const STREETS:String = "streets";
-    public static const AERIAL:String = "aerial";
-    public static const TOPO:String = "topo";
+    public static const STREETS:String = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer";
+
+    public static const AERIAL:String = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer";
+
+    public static const TOPO:String = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer";
+
+    public static const TOPO_US:String = "http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer";
+
+    public static const TERRAIN:String = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer";
+
+    public static const OCEAN:String = "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer";
+
+    public static const OPEN_STREET_MAP:String = "openStreetMap";
 
     public function MapType()
     {
