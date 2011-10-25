@@ -103,7 +103,14 @@
                 const mapPoint:MapPoint = location as MapPoint;
                 if (mapPoint)
                 {
-                    centerAt(new WebMercatorMapPoint(mapPoint.x, mapPoint.y));
+                    if (-180.0 < mapPoint.x && mapPoint.x < 180 && -90 < mapPoint.y && mapPoint.y < 90)
+                    {
+                        centerAt(new WebMercatorMapPoint(mapPoint.x, mapPoint.y));
+                    }
+                    else
+                    {
+                        centerAt(mapPoint);
+                    }
                 }
                 else
                 {

@@ -1,4 +1,5 @@
 <?xml version='1.0'?>
 <componentPackage>
     <component id="ESRIMap" class="com.esri.views.ESRIMap"/>
+    <component id="ESRIMobileMap" class="com.esri.views.ESRIMobileMap"/>
 </componentPackage>
