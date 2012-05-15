@@ -27,7 +27,7 @@
 
             private function map_geolocationUpdateHandler(event:GeolocationUpdateEvent):void
             {
-                map.locationToAddress(event.mapPoint, 50.0);
+                map.locationToAddress(event.mapPoint, 100.0);
             }
 
             private function map_loadHandler(event:MapEvent):void

@@ -16,12 +16,14 @@
 package com.esri.views
 {
 
+import com.esri.ags.symbols.InfoSymbol;
+
 import mx.core.ClassFactory;
 
 /**
  * @private
  */
-public class AddrSymbol extends InfoSymbol2
+public class AddrSymbol extends InfoSymbol
 {
     public function AddrSymbol()
     {

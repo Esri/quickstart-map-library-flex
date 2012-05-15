@@ -27,6 +27,7 @@ import com.esri.ags.symbols.Symbol;
 import com.esri.ags.tasks.Locator;
 import com.esri.ags.tasks.RouteTask;
 import com.esri.ags.tasks.supportClasses.AddressCandidate;
+import com.esri.ags.tasks.supportClasses.AddressToLocationsParameters;
 import com.esri.ags.tasks.supportClasses.DirectionsFeatureSet;
 import com.esri.ags.tasks.supportClasses.RouteParameters;
 import com.esri.ags.tasks.supportClasses.RouteResult;
@@ -96,13 +97,17 @@ public final class RouteController implements IMXMLObject
         const param:Object = {};
         param[model.locatorKey] = addr;
 
+        const addressToLocationsParameters:AddressToLocationsParameters = new AddressToLocationsParameters();
+        addressToLocationsParameters.address = param;
+        addressToLocationsParameters.outFields = [ model.locatorVal ];
+
         const locator:Locator = new Locator(model.locatorURL);
         locator.outSpatialReference = map.spatialReference;
         locator.requestTimeout = model.requestTimeout;
         locator.showBusyCursor = true;
         locator.addEventListener(FaultEvent.FAULT, locator_faultHandler);
         locator.addEventListener(LocatorEvent.ADDRESS_TO_LOCATIONS_COMPLETE, locator_addressToLocationsCompleteHandler);
-        locator.addressToLocations(param, [ model.locatorVal ], responder);
+        locator.addressToLocations(addressToLocationsParameters, responder);
 
         function locator_addressToLocationsCompleteHandler(event:LocatorEvent):void
         {

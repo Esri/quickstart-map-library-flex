@@ -26,6 +26,7 @@ import com.esri.ags.geometry.WebMercatorMapPoint;
 import com.esri.ags.symbols.Symbol;
 import com.esri.ags.tasks.Locator;
 import com.esri.ags.tasks.supportClasses.AddressCandidate;
+import com.esri.ags.tasks.supportClasses.AddressToLocationsParameters;
 import com.esri.ags.utils.WebMercatorUtil;
 import com.esri.model.Model;
 import com.esri.views.AddrSymbol;
@@ -53,13 +54,17 @@ public final class LocateController
         const param:Object = {};
         param[model.locatorKey] = address;
 
+        const addressToLocationsParameters:AddressToLocationsParameters = new AddressToLocationsParameters();
+        addressToLocationsParameters.address = param;
+        addressToLocationsParameters.outFields = [ model.locatorVal ];
+
         const locator:Locator = new Locator(model.locatorURL);
         locator.outSpatialReference = map.spatialReference;
         locator.requestTimeout = model.requestTimeout;
         locator.showBusyCursor = true;
         locator.addEventListener(FaultEvent.FAULT, faultHandler);
         locator.addEventListener(LocatorEvent.ADDRESS_TO_LOCATIONS_COMPLETE, locator_addressToLocationsCompleteHandler);
-        locator.addressToLocations(param, [ model.locatorVal ]);
+        locator.addressToLocations(addressToLocationsParameters);
 
         function locator_addressToLocationsCompleteHandler(event:LocatorEvent):void
         {
@@ -123,6 +128,10 @@ public final class LocateController
                 if (attributes.Address)
                 {
                     arr.push(attributes.Address);
+                }
+                else
+                {
+                    attributes.Address = "N/A";
                 }
                 if (attributes.City)
                 {
