@@ -1,8 +1,6 @@
 # ArcGIS API Lite for Flex
 
-Open Source Initiative Project
-
-Version: Draft v1
+A library and sample app to get started with Esri's ArcGIS API for Flex built on top of the 4.6+ Flex SDK.
 
 The ArcGIS API Lite for Flex enables you to embed mapping capabilities into
 your Flex projects very easily. It rivals in simplicity with other popular mapping
@@ -38,7 +36,7 @@ average non-GIS expert into the great opportunities that GIS has to offer.
    In fact, you could potentially leverage both within the same application if desired.
 5. No user keys or tokens are needed. You simply download the API and start developing.
 6. Unlike other APIs, you retain all rights over your data.
-7. Google recently announced the deprecation of its Google Maps API for Flash.
+7. Google announced the deprecation of its Google Maps API for Flash in 2011.
 
 ### What is the business/licensing model for the ArcGIS API Lite for Flex?
 
@@ -50,9 +48,50 @@ ArcGIS API Lite for Flex is provided by [ArcGIS Online services](http://www.esri
 services is governed by the Web Services and API Terms of Use. You can view the summary
 or the complete Esri Terms of Use documents. For additional questions please email arcgisonline@esri.com.
 
-### Are any resources/documentation available for the ArcGIS API Lite for Flex?
+## Instructions
 
-[Yes, through the developer community at GitHub](https://github.com/ArcGIS/FlexAPILite/wiki).
+1. Make sure you have the ArcGIS API for Flex API Library (the swc file)
+2. Download and unzip the .zip file or clone the repo.
+3. Create new project or import into Eclipse.
+
+[New to Github? Get started here.](http://htmlpreview.github.com/?https://github.com/Esri/esri.github.com/blob/master/help/esri-getting-to-know-github.html)
+
+## Requirements
+
+* Flex SDK 4.6 or later
+* ArcGIS API 3.0 for Flex
+* Experience with Flex would help.
+
+## Resources
+
+* https://github.com/ArcGIS/FlexAPILite/wiki
 Developer help is available at no cost from the ArcGIS API for Flex Resource Center and its discussion
 forum. If you need additional Technical Support for the ArcGIS API for Flex, you can purchase the
 EDN Tech Support plan (only available in the US), or an ArcGIS product.
+* [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
+* [twitter@esri](http://twitter.com/esri)
+
+## Issues
+
+Find a bug or want to request a new feature?  Please let us know by submitting an Issue.
+
+## Contributing
+
+Anyone and everyone is welcome to contribute. 
+
+## Licensing
+Copyright 2012 Esri
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+A copy of the license is available in the repository's [license.txt]( https://raw.github.com/ArcGIS/switch-basemaps-js/master/license.txt) file.
