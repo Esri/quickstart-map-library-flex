@@ -10,7 +10,7 @@ APIs such as those from Google, Yahoo, etc, and provides a comprehensive collect
 maps to utilize (Topographic and Street maps, Imagery, Shaded Relief, etc) in your
 projects. It also offers unique analytical capabilities such as calculating drive-time polygons and others.
 This API is available as a developer sample under the Apache 2.0 license and can
-be downloaded from Github. The ArcGIS API Lite for Flex is built as a wrapper around the
+be downloaded from Github. The ArcGIS API Lite for Flex is built as a framework library around the
 powerful ArcGIS API for Flex, a more advanced API for building GIS web applications.
 
 ## Common Questions:
@@ -34,7 +34,7 @@ average non-GIS expert into the great opportunities that GIS has to offer.
    adapt it to your specific business needs
 4. With other APIs, you are limited to simple mapping. They do not offer a "next level"
    to advance to if desired. The ArcGIS API Lite for Flex is a great introduction to the
-   power of the ArcGIS API for Flex: a sophisticated library for geographic analysis on the web.
+   power of the ArcGIS API for Flex: a full featured library for geographic analysis on the web.
    In fact, you could potentially leverage both within the same application if desired.
 5. No user keys or tokens are needed. You simply download the API and start developing.
 6. Unlike other APIs, you retain all rights over your data.
@@ -43,7 +43,7 @@ average non-GIS expert into the great opportunities that GIS has to offer.
 
 * [Adobe Flashbuilder](http://www.adobe.com/products/flash-builder.html)
 * [ArcGIS API for Flex](http://resources.arcgis.com/en/communities/flex-api/)
-* Some experience with Flex development
+* Some experience with Flex and ActionScript development
 
 ## Resources
 
