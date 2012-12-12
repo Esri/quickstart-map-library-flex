@@ -56,12 +56,12 @@ public final class LocateController
 
         const addressToLocationsParameters:AddressToLocationsParameters = new AddressToLocationsParameters();
         addressToLocationsParameters.address = param;
-        addressToLocationsParameters.outFields = [ model.locatorVal ];
+        //addressToLocationsParameters.outFields = [ model.locatorVal ];
 
         const locator:Locator = new Locator(model.locatorURL);
         locator.outSpatialReference = map.spatialReference;
         locator.requestTimeout = model.requestTimeout;
-        locator.showBusyCursor = true;
+        locator.showBusyCursor = true; 
         locator.addEventListener(FaultEvent.FAULT, faultHandler);
         locator.addEventListener(LocatorEvent.ADDRESS_TO_LOCATIONS_COMPLETE, locator_addressToLocationsCompleteHandler);
         locator.addressToLocations(addressToLocationsParameters);

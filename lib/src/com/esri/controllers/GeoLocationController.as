@@ -21,13 +21,16 @@ import com.esri.ags.Map;
 import com.esri.ags.geometry.WebMercatorMapPoint;
 import com.esri.ags.symbols.Symbol;
 import com.esri.events.GeolocationUpdateEvent;
+import com.esri.events.HTML5GeolocationEvent;
 import com.esri.model.Model;
 import com.esri.views.BitmapSymbol;
 
 import flash.events.GeolocationEvent;
+import flash.external.ExternalInterface;
 import flash.sensors.Geolocation;
 
 import mx.rpc.Fault;
+import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
 
 public final class GeoLocationController
@@ -42,6 +45,8 @@ public final class GeoLocationController
     private var m_geoLocation:Geolocation;
 
     private var m_symbol:BitmapSymbol;
+	
+	private var m_zoomLevel:int;
 
     private function getSymbol():Symbol
     {
@@ -57,7 +62,9 @@ public final class GeoLocationController
 
     public function whereAmI(zoomLevel:int):void
     {
-        if (Geolocation.isSupported)
+        m_zoomLevel = zoomLevel;
+		
+		if (Geolocation.isSupported)
         {
             if (m_geoLocation === null)
             {
@@ -84,10 +91,78 @@ public final class GeoLocationController
                 }
             }
         }
-        else if (map.hasEventListener(FaultEvent.FAULT))
+
+        else if (ExternalInterface.available)
         {
-            map.dispatchEvent(new FaultEvent(FaultEvent.FAULT, false, true, new Fault('geoLocationNotSupported', 'Geolocation is not supported')));
+			const  VERIFY_GEOLOCATION:String = 
+				"document.insertScript = function(){" +
+					"verify_geolocation = function(){"+
+						"var geoEnabled = false;" + 
+						"if(navigator && navigator.geolocation)" +
+						"{" +
+						"    return geoEnabled = true;" +
+						"}" +
+						"else{" +
+						"    return geoEnabled = false;" +
+						"}"+
+					"}"+
+				"}";
+			
+			const  GET_GEOLOCATION:String = 
+				"document.insertScript = function(){" +
+					"get_geolocation = function(){"+
+						"var location = null;" + 
+						"var mySWF = document.getElementById('EsriQuickStartSample');"+
+						"navigator.geolocation.getCurrentPosition(function(position){"+
+						"     mySWF.sendDataToActionScript(position);"+
+						"});"+
+					"}"+
+				"}";				
+			
+			//load the script in DOM
+			ExternalInterface.call(VERIFY_GEOLOCATION); 
+			
+			//call the JS function
+			var geoEnabled:Boolean = ExternalInterface.call("verify_geolocation");
+			
+			if(geoEnabled == true){
+				//Load the script in DOM
+				ExternalInterface.call(GET_GEOLOCATION); 
+				
+				//Step 1: set the callback
+				ExternalInterface.addCallback("sendDataToActionScript",html5GeolocationHandler); 
+				
+				//Step 2: call the JS Function
+				ExternalInterface.call("get_geolocation"); 
+				
+				trace("geoEnabled: " + geoEnabled);
+			}		
         }
+	
+		else if (map.hasEventListener(FaultEvent.FAULT))
+		{
+			map.dispatchEvent(new FaultEvent(FaultEvent.FAULT, false, true, new Fault('geoLocationNotSupported', 'Geolocation is not supported')));
+		}
     }
+
+	private function html5GeolocationHandler(event:Object):void
+	{
+		const mapPoint:WebMercatorMapPoint = new WebMercatorMapPoint(event.coords.longitude, event.coords.latitude);
+		const feature:Graphic = new Graphic(mapPoint, getSymbol(), event);
+		model.pointArrCol.addItem(feature);
+		if (m_zoomLevel > -1)
+		{
+			map.centerAt(mapPoint);
+			map.level = m_zoomLevel;
+		}
+		if (map.hasEventListener(HTML5GeolocationEvent.GEOLOCATION_UPDATE))
+		{
+			map.dispatchEvent(new HTML5GeolocationEvent(HTML5GeolocationEvent.GEOLOCATION_UPDATE, false, false,  
+				event.coords.latitude, event.coords.longitude, 
+				event.coords.altitude, event.coords.horizontalAccuracy, 
+				event.coords.speed, event.coords.heading, event.coords.timestamp));
+		}		
+	}
+
 }
 }

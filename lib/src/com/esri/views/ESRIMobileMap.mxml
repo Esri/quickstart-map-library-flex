@@ -41,7 +41,7 @@
              * &lt;uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/&gt;
              * </p>
              */
-            override public function whereAmI(zoomLevel:int = 16):void
+            override public function centerAtMyLocation(zoomLevel:int = 16):void
             {
                 geoLocation.whereAmI(zoomLevel);
             }
