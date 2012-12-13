@@ -17,11 +17,14 @@ Made the following changes to better synchronize with the other ArcGIS QuickStar
 - Changed whereAmI() in ESRIMobileMap to centerAtMyLocation() 
 - Restructured the file directory
 
-Miscellaneous additions, deletions and updates:
+Additions:
 - Added new Apache license file
 - Added new Draw widget
 - Added HTML5 Geolocation capabilities
 - Added full functionality demo app
+
+Fixes, deletions, updates:
+
 - Updated to support Flex 4.6
 - Various internal bug fixes
 - Updated readme
