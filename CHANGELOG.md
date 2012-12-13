@@ -11,7 +11,7 @@ Added support for OpenStreetMap
 
 ##Version 2.0 - Dec. 13, 2012
 
-Made the following changes to better synchronize with the other ArcGIS QuickStart libraries:
+Changes to better synchronize with the other ArcGIS QuickStart libraries:
 - Changed setMapType() in ESRIMap to setBasemap() 
 - Changed whereAmI() in ESRIMap to centerAtMyLocation() 
 - Changed whereAmI() in ESRIMobileMap to centerAtMyLocation() 
