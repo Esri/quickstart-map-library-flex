@@ -1,6 +1,8 @@
 # ArcGIS API Lite for Flex
 
-A library and sample app to get started with Esri's ArcGIS API for Flex built on top of the 4.6+ Flex SDK.
+This library provides an open source framework and sample apps for getting started with the ArcGIS API for Flex.
+
+Version: v2
 
 The ArcGIS API Lite for Flex enables you to embed mapping capabilities into
 your Flex projects very easily. It rivals in simplicity with other popular mapping
@@ -8,7 +10,7 @@ APIs such as those from Google, Yahoo, etc, and provides a comprehensive collect
 maps to utilize (Topographic and Street maps, Imagery, Shaded Relief, etc) in your
 projects. It also offers unique analytical capabilities such as calculating drive-time polygons and others.
 This API is available as a developer sample under the Apache 2.0 license and can
-be downloaded from Github. The ArcGIS API Lite for Flex is built as a wrapper around the
+be downloaded from Github. The ArcGIS API Lite for Flex is built as a framework library around the
 powerful ArcGIS API for Flex, a more advanced API for building GIS web applications.
 
 ## Common Questions:
@@ -32,44 +34,23 @@ average non-GIS expert into the great opportunities that GIS has to offer.
    adapt it to your specific business needs
 4. With other APIs, you are limited to simple mapping. They do not offer a "next level"
    to advance to if desired. The ArcGIS API Lite for Flex is a great introduction to the
-   power of the ArcGIS API for Flex: a sophisticated library for geographic analysis on the web.
+   power of the ArcGIS API for Flex: a full featured library for geographic analysis on the web.
    In fact, you could potentially leverage both within the same application if desired.
 5. No user keys or tokens are needed. You simply download the API and start developing.
 6. Unlike other APIs, you retain all rights over your data.
-7. Google announced the deprecation of its Google Maps API for Flash in 2011.
-
-### What is the business/licensing model for the ArcGIS API Lite for Flex?
-
-The ArcGIS API Lite for Flex is licensed under the Apache 2.0 license. However, it uses both
-the ArcGIS API for Flex and ArcGIS Online services. To use the ArcGIS API Lite
-for Flex, you will be asked to download the ArcGIS API for Flex - where you will be
-exposed to its terms of use. Most of the maps and analysis functionality available through the
-ArcGIS API Lite for Flex is provided by [ArcGIS Online services](http://www.esri.com/software/arcgis/arcgisonline/index.html). Usage of ArcGIS Online web
-services is governed by the Web Services and API Terms of Use. You can view the summary
-or the complete Esri Terms of Use documents. For additional questions please email arcgisonline@esri.com.
-
-## Instructions
-
-1. Make sure you have the ArcGIS API for Flex API Library (the swc file)
-2. Download and unzip the .zip file or clone the repo.
-3. Create new project or import into Eclipse.
-
-[New to Github? Get started here.](http://htmlpreview.github.com/?https://github.com/Esri/esri.github.com/blob/master/help/esri-getting-to-know-github.html)
 
 ## Requirements
 
-* Flex SDK 4.6 or later
-* ArcGIS API 3.0 for Flex
-* Experience with Flex would help.
+* [Adobe Flashbuilder](http://www.adobe.com/products/flash-builder.html)
+* [ArcGIS API for Flex](http://resources.arcgis.com/en/communities/flex-api/)
+* Some experience with Flex and ActionScript development
 
 ## Resources
 
-* https://github.com/ArcGIS/FlexAPILite/wiki
-Developer help is available at no cost from the ArcGIS API for Flex Resource Center and its discussion
-forum. If you need additional Technical Support for the ArcGIS API for Flex, you can purchase the
-EDN Tech Support plan (only available in the US), or an ArcGIS product.
+* [ArcGIS API for Flex Resource Center](http://resources.arcgis.com/en/communities/flex-api/)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * [twitter@esri](http://twitter.com/esri)
+
 
 ## Issues
 

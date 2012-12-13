@@ -90,7 +90,7 @@ public final class LatLonController
     public function addPolygon(points:Array, symbol:Symbol = null):Graphic
     {
         const feature:Graphic = new Graphic(new Polygon([ toMercator(points)]), symbol);
-        model.polylineArrCol.addItem(feature);
+        model.polygonArrCol.addItem(feature);
         return feature;
     }
 

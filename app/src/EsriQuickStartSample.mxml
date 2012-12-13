@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:esri="http://www.esri.com/2008/ags"
+			   xmlns:views="com.esri.views.*"
+			   xmlns:widgets="com.esri.widgets.*"
+			   xmlns:local="*"
+			   applicationComplete="applicationCompleteHandler(event)" 
+			   backgroundColor="black"
+			   viewSourceURL="srcview/index.html">
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.viewsource.ViewSource;
+			import com.esri.ags.Graphic;
+			import com.esri.ags.events.DrawEvent;
+			import com.esri.ags.events.LocatorEvent;
+			import com.esri.ags.events.MapEvent;
+			import com.esri.ags.events.MapMouseEvent;
+			import com.esri.ags.events.RouteEvent;
+			import com.esri.ags.layers.GraphicsLayer;
+			import com.esri.ags.tools.DrawTool;
+			import com.esri.events.DrawEndEvent;
+			import com.esri.events.HTML5GeolocationEvent;
+			import com.esri.views.MapType;
+			
+			import flash.events.GeolocationEvent;
+			
+			import mx.controls.Alert;
+			import mx.events.EffectEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			import mx.events.ResizeEvent;
+			import mx.rpc.events.FaultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			import spark.events.ListEvent;
+			
+			[Bindable]
+			private var _rightX:int;
+			
+			private var _drawTool:DrawTool;
+			
+			private function applicationCompleteHandler(event:FlexEvent):void
+			{
+				_rightX = stage.stageWidth;
+				this.addEventListener(ResizeEvent.RESIZE,resizeHandler);
+				ViewSource.addMenuItem(this,"srcview/index.html");
+				togglePanels([true,false,false,false,false]);
+
+				_drawTool = new DrawTool(map);
+				_drawTool.lineSymbol = sls;
+				_drawTool.markerSymbol = sms;
+				_drawTool.fillSymbol = sfs;
+				_drawTool.graphicsLayer = map.pointLayer;
+				_drawTool.addEventListener(DrawEvent.DRAW_END,drawTool_drawEndHandler);		
+				
+				codeText.htmlText = codeAddBasemap;
+				
+			}	
+			
+			private function resizeHandler(event:ResizeEvent):void
+			{
+				_rightX = stage.stageWidth;
+				codePanel.right = -475;
+				codePanel.verticalCenter = 0;
+			}			
+			
+			private function map_loadHandler(event:MapEvent):void
+			{
+				map.addEventListener(FaultEvent.FAULT,faultEventHandler);
+				map.addEventListener(HTML5GeolocationEvent.GEOLOCATION_UPDATE,geolocationUpdateHandler);
+				map.addEventListener(LocatorEvent.ADDRESS_TO_LOCATIONS_COMPLETE,locatorEventHandler);
+				map.addEventListener(RouteEvent.SOLVE_COMPLETE, routeTask_solveCompleteHandler);
+				map.setCenter([ 39.12 /*lat*/, -94.6 /*lon*/ ],4); 		
+			}
+			
+			private function locatorEventHandler(event:LocatorEvent):void
+			{
+				if(event.addressCandidate == null && event.addressCandidates.length == 0)
+				{
+					Alert.show("No addresses were found. Please try again.","Place Finder");
+				}
+			}
+			
+			private function routeTask_solveCompleteHandler(event:RouteEvent):void
+			{
+				directionsDisplayWidget.visible = directionsDisplayWidget.includeInLayout = true;
+			}
+			
+			private function buttonbar1_changeHandler(event:IndexChangeEvent):void
+			{
+				buttonBarSwitchCase(event.newIndex);
+			}
+			
+			
+			private function buttonbar1_itemRollOverHandler(event:ListEvent):void
+			{				
+				buttonBarSwitchCase(event.itemIndex);
+			}				
+			
+			private function buttonBarSwitchCase(index:int):void
+			{
+				switch(index)
+				{  
+					case 0: /* Basemaps */
+						togglePanels([true,false,false,false,false]);
+						codeText.htmlText = codeAddBasemap;
+						selectorLabel.text = "Basemaps";
+						selectorExplanationLabel.text = "Select a basemap.";
+						break;
+					case 1: /* Geolocation */
+						togglePanels([false,false,false,false,true]);
+						codeText.htmlText = codeGeolocation;
+						selectorLabel.text = "Geolocation";
+						selectorExplanationLabel.text = "Zoom to your geolocation.";
+						break;
+					case 2: /* Add Graphics */
+						togglePanels([false,true,false,false,false]);
+						codeText.htmlText = codeAddGraphics;
+						selectorLabel.text = "Add Graphics";
+						selectorExplanationLabel.text = "Click the map to add graphics.";						
+						break;
+					case 3: /* Find Places */
+						togglePanels([false,false,true,false,false]);
+						codeText.htmlText = codeFindPlaces;
+						selectorLabel.text = "Find Place";
+						selectorExplanationLabel.text = "Enter a place name.";
+						break;
+					case 4: /* Directions */
+						togglePanels([false,false,false,true,false]);
+						codeText.htmlText = codeGetDirections;
+						selectorLabel.text = "Directions";
+						selectorExplanationLabel.text = "Enter your start and stop locations.";
+						break;
+				}
+			}		
+			
+			private function togglePanels(array:Array):void
+			{
+				map.baseLayerView.visible = basemapHGroup.visible = basemapHGroup.includeInLayout = array[0]; //don't show the button bar
+				drawToolButtonBarPanel.visible = drawToolButtonBarPanel.includeInLayout = array[1];
+				addGraphicsHGroup.visible = addGraphicsHGroup.includeInLayout = array[1];
+				findPlacesHGroup.visible = findPlacesHGroup.includeInLayout = array[2];
+				findDirectionsHGroup.visible = findDirectionsHGroup.includeInLayout = array[3];	
+				geolocationHGroup.visible = geolocationHGroup.includeInLayout = array[4];		
+				
+				if(directionsDisplayWidget.display == true && array[3] == true)
+				{
+					directionsDisplayWidget.visible = directionsDisplayWidget.includeInLayout = true;
+				}
+				if(directionsDisplayWidget.display == false && array[3] == false)
+				{
+					directionsDisplayWidget.visible = directionsDisplayWidget.includeInLayout = false;
+				}
+				if(directionsDisplayWidget.display == true && array[3] == false)
+				{
+					directionsDisplayWidget.visible = directionsDisplayWidget.includeInLayout = false;
+				}
+				if(directionsDisplayWidget.display == false && array[3] == true)
+				{
+					directionsDisplayWidget.visible = directionsDisplayWidget.includeInLayout = false;
+				}
+			}
+			
+			private function faultEventHandler(event:FaultEvent):void
+			{
+				
+				if(event.fault.faultCode != null)
+				{					
+					Alert.show(event.fault.message,"Warning");
+				}
+			}
+			
+			private function geolocationUpdateHandler(event:HTML5GeolocationEvent):void
+			{
+				Alert.show("Latitude: " + event.latitude + ", Longitude: " + event.longitude,"My Location");
+			}
+			
+			private function findPlaceClickHandler():void
+			{
+				map.addressToLocation(findPlaceTextInput.text,10);
+			}
+			
+			private function directionsClickHandler():void
+			{
+				map.route([directionsStart.text,directionsEnd.text]);
+			}	
+			
+			private function panel_rollOutHandler(event:MouseEvent):void
+			{
+				panelOut.end();
+				panelIn.play();
+			}
+			
+			private function panel_rollOverHandler(event:MouseEvent):void
+			{
+				panelIn.end();
+				panelOut.play();
+			}				
+			
+			private function toggleBtn(e:MouseEvent):void
+			{	
+				if(e.currentTarget.label == 'Open')
+				{
+					panelIn.end();
+					panelOut.play();				
+				}
+				if(codePanel.x >= _rightX)
+				{
+					panelIn.end();
+					panelOut.play();
+				}
+				else
+				{
+					
+				}
+			}			
+			
+			private const codeAddBasemap:String = 
+				"<b>Adding a Basemap</b><br><br>"+
+				"This code shows how to add a map and center it using a simple latitude, longitude point.<br>"+
+				"_________________________________<br><br>"+
+				"<font color='#0000FF'>private</font> function map_loadHandler(event:MapEvent):<font color='#0000FF'>void</font><br>"+
+				"{<br>"+
+				"     <font color='#00FF00'>//Center the map by specifying a latitude and longitude</font><br>"+
+				"	  map.setCenter([ 40.736072 <font color='#0000FF'>/*lat*/</font>, -73.992062 <font color='#0000FF'>/*lon*/</font> ]); <br>"+		
+				"}<br><br>"+	
+				"<font color='#00FF00'>&#60;!--  Listen for the load event on the ESRIMap control  --&#62;</font><br>"+
+				"<font color='#0000FF'>&#60;views:ESRIMap</font> id='map' load='map_loadHandler(event)' width='100%' height='100%' top='70' <font color='#0000FF'>/&#62;</font>";
+
+			private const codeAddGraphics:String =
+				"<b>Add a graphic to the map.</b><br><br>"+
+				"This sample shows two ways to add graphics.<br>"+
+				"_________________________________<br><br>"+					
+				"<font color='#0000FF'>&#60;custom:DrawToolButtonBarWidget</font> id='rawToolButtonBarPanel' visible='false'<br>"+
+				"styleName='basicContainerStyle' skinClass='skins.ControlPanelSkin'<br>"+ 
+				"height='39' map='{map}' graphicsLayer='{map.pointLayer}'  <font color='#0000FF'>/&#62;</font>";			
+			
+			private const codeFindPlaces:String =				
+				"<b>Find a place and map it.</b><br><br>"+
+				"This code shows how to implement a basic placefinder.<br>"+
+				"_________________________________<br><br>"+					
+				"<font color='#0000FF'>private</font> function findPlaceClickHandler():<font color='#0000FF'>void</font><br>"+
+				"{<br>"+
+				"	map.addressToLocation(findPlaceTextInput.text,10);<br>"+
+				"}<br><br>"+				
+				"<font color='#0000FF'>&#60;s:TextInput</font> id='findPlaceTextInput' width='90%' prompt='100 Stout Street, Denver, CO' <font color='#0000FF'>/&#62;</font>";
+			
+			private const codeGetDirections:String =
+				"<b>Get driving directions and display the route.</b><br><br>"+
+				"This code shows how to quickly implement driving directions.<br>"+
+				"_________________________________<br><br>"+				
+				"<font color='#0000FF'>private</font> function directionsClickHandler():<font color='#0000FF'>void</font><br>"+
+				"{<br>"+
+				"	map.route([directionsStart.text,directionsEnd.text]);<br>"+
+				"}<br><br>" +				
+				"<font color='#0000FF'>&#60;s:TextInput</font> id='directionsStart' width='90%' prompt='Start location' <font color='#0000FF'>/&#62;</font><br>"+
+				"<font color='#0000FF'>&#60;s:TextInput</font> id='directionsEnd' width='90%' prompt='End location' <font color='#0000FF'>/&#62;</font>";
+			
+			private const codeGeolocation:String =
+				"<b>Use geolocation to center the map.</b><br><br>"+
+				"This code shows how ask use HTML5 Geolocation to center the map.<br>"+
+				"_________________________________<br><br>"+				
+				"<font color='#00FF00'>//Set the event listener</font><br>"+				
+				"map.addEventListener(HTML5GeolocationEvent.GEOLOCATION_UPDATE,geolocationUpdateHandler);<br><br>"+
+				"map.centerAtMyLocation(10);<br><br>"+
+				"<font color='#0000FF'>private</font> function geolocationUpdateHandler(event:HTML5GeolocationEvent):<font color='#0000FF'>void</font><br>"+
+				"{<br>"+
+				"     Alert.show('Latitude: ' + event.latitude + ', Longitude: ' + event.longitude);<br>"+
+				"}";
+			
+			private function drawToolButtonBarPanel_drawCompleteHandler(event:DrawEndEvent):void
+			{
+				//When drawing completes use this pattern to retrieve the graphic
+				var graphic:Graphic = event.graphic; 
+			}
+			
+			private function mapChangerCheckBox_clickHandler(event:MouseEvent):void
+			{
+				map.baseLayerView.visible = !map.baseLayerView.visible;
+			}
+			
+			private function drawToolChangerCheckBox_clickHandler(event:MouseEvent):void
+			{
+				drawToolButtonBarPanel.visible = !drawToolButtonBarPanel.visible;
+			}
+			
+			public function drawTool_drawEndHandler(event:DrawEvent):void
+			{
+				// reset after finished drawing a feature
+				_drawTool.deactivate();
+				
+				//Retrieve the graphic from the draw event
+				//var graphic:Graphic = event.graphic;
+			}
+			
+			private function addPoint_clickHandler():void
+			{
+				clearGraphics_clickHandler();
+				selectorExplanationLabel.text = "Click on map to add point.";
+				map.addEventListener(MapMouseEvent.MAP_CLICK,mapClickHandler);
+				
+				//you can also use:
+				//_drawTool.activate(DrawTool.MAPPOINT);
+			}
+			
+			private function mapClickHandler(event:MapMouseEvent):void
+			{
+				map.addPoint(event.mapPoint);
+			}
+						
+			private function addLine_clickHandler():void
+			{
+				clearGraphics_clickHandler();
+				selectorExplanationLabel.text = "Click on map to start drawing. Double-click to finish.";				
+				_drawTool.activate(DrawTool.POLYLINE);
+				
+				//You can also use add a line programmatically:
+				//map.addLine([[41.84,-87.68],[41.9,-87.9],[42.9,-89]]);
+			}
+			
+			private function clearGraphics_clickHandler():void
+			{
+				if(map.hasEventListener(MapMouseEvent.MAP_CLICK)) map.removeEventListener(MapMouseEvent.MAP_CLICK,mapClickHandler);
+				_drawTool.deactivate();
+				directionsDisplayWidget.repeat.dataProvider = [];
+				map.clearAll();
+			}
+			
+			protected function addPolygon_clickHandler():void
+			{
+				clearGraphics_clickHandler();
+				selectorExplanationLabel.text = "Click on map to start drawing. Double-click to finish.";				
+				_drawTool.activate(DrawTool.POLYGON);
+				
+				//You can also use add a line programmatically:
+				//map.addPolygon([[41.84,-87.68],[41.9,-87.9],[42.9,-89],[43.9,-89.9],[42.9,-94.9],[41.84,-87.68]]);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<mx:Move id="panelOut" target="{codePanel}" xTo="{_rightX - 500}" duration="0" startDelay="0"/>
+		<mx:Move id="panelIn" target="{codePanel}" xTo="{_rightX - 25}"  duration="2000"  />
+		
+		<!-- Symbol for all point shapes -->
+		<esri:SimpleMarkerSymbol id="sms"
+								 color="0x0000FF"
+								 size="12"
+								 style="square"/>
+		
+		<!-- Symbol for all line shapes -->
+		<esri:SimpleLineSymbol id="sls"
+							   width="3"
+							   color="0x0000FF"/>
+		
+		<!-- Symbol for all polygon shapes -->
+		<esri:SimpleFillSymbol id="sfs"
+							   color="0xFFFFFF"
+							   style="diagonalcross">
+			<esri:outline>
+				<esri:SimpleLineSymbol width="2" color="0x00FF00"/>
+			</esri:outline>
+		</esri:SimpleFillSymbol>		
+	</fx:Declarations>
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		@namespace esri "http://www.esri.com/2008/ags";
+		@namespace views "com.esri.views.*";
+		
+		.basicContainerStyle{
+			top:80;
+			right:10;
+		}
+	</fx:Style>			
+	
+	<!-- Main UX Group -->
+	<s:VGroup width="100%" height="100%">
+		<s:ButtonBar top="10" left="5" height="50" 
+					 itemRollOver="buttonbar1_itemRollOverHandler(event)"
+					 change="buttonbar1_changeHandler(event)">
+			<mx:ArrayCollection>
+				<fx:String>Basemaps</fx:String> 
+				<fx:String>Geolocation</fx:String> 
+				<fx:String>Add Graphics</fx:String> 
+				<fx:String>Find Place</fx:String> 
+				<fx:String>Directions</fx:String>
+			</mx:ArrayCollection>		
+		</s:ButtonBar>		
+		
+		<views:ESRIMap id="map" load="map_loadHandler(event)" width="100%" height="100%" top="70" />		
+		
+		<s:Label id="selectorExplanationLabel" width="100%" text="Select a basemap" height="16" 
+				 fontSize="16" color="white" textAlign="center" verticalAlign="middle" />
+		<s:BorderContainer width="100%" height="125" bottom="5" backgroundColor="#382D2C">
+			
+			<!-- Parent HGroup -->
+			<s:HGroup width="100%" height="100%">
+				<s:Spacer width="5" />
+				<s:Label id="selectorLabel" width="107" height="100%" fontSize="16" 
+						 text="Basemaps" color="white" rotation="-90" verticalAlign="middle" textAlign="center" />
+				
+				<!-- Content Children -->
+				<s:HGroup horizontalAlign="center" verticalAlign="middle" width="100%" height="100%">
+			
+					<!-- Geolocation HGroup -->
+					<s:HGroup id="geolocationHGroup" visible="false" includeInLayout="false" >
+						<s:Button label="Find me!" width="120" height="87" click="{map.centerAtMyLocation(13);}" skinClass="skins.CustomButtonSkin" />
+						<s:Button label="Clear" width="87" height="87" click="{map.pointLayer.clear()}" skinClass="skins.CustomButtonSkin" />
+					</s:HGroup>
+					
+					<!-- Basemap HGroup -->
+					<s:HGroup id="basemapHGroup" visible="false" includeInLayout="false" >
+						<s:Button id="streetsButton" height="87" width="87" toolTip="Streets" click="{map.setBasemap(MapType.STREETS)}"
+								  icon="@Embed('assets/streets.png')" skinClass="skins.CustomButtonSkin" />
+						<s:Button id="topoButton" height="87" width="87" toolTip="Topo" click="{map.setBasemap(MapType.TOPO)}"
+								  icon="@Embed('assets/topo78x78.png')" skinClass="skins.CustomButtonSkin" />
+						<s:Button id="satelliteButton" height="87" width="87" toolTip="Satellite" click="{map.setBasemap(MapType.AERIAL)}"
+								  icon="@Embed('assets/satellite.png')" skinClass="skins.CustomButtonSkin" />
+						<s:BorderContainer height="87" width="87" backgroundAlpha="0">
+							<s:VGroup verticalCenter="0" horizontalCenter="0">
+								<s:CheckBox id="mapChangerCheckBox" selected="true" scaleX="1.5" scaleY="1.5"
+											toolTip="Toogle map widget" 
+											click="mapChangerCheckBox_clickHandler(event)" />
+								<s:Label text="Map Widget" color="white" />
+							</s:VGroup>							
+						</s:BorderContainer>
+					</s:HGroup>
+					
+					<!-- Add Graphics HGroup -->
+					<s:HGroup id="addGraphicsHGroup" visible="false" includeInLayout="false">
+						<s:Button label="Add Point" width="87" height="87" click="addPoint_clickHandler()" skinClass="skins.CustomButtonSkin" />
+						<s:Button label="Add Line" width="87" height="87" click="addLine_clickHandler()" skinClass="skins.CustomButtonSkin" />
+						<s:Button label="Add Polygon" width="87" height="87" click="addPolygon_clickHandler()" skinClass="skins.CustomButtonSkin" />
+						<s:Button label="Clear" width="87" height="87" click="clearGraphics_clickHandler()" skinClass="skins.CustomButtonSkin" />
+						<s:BorderContainer height="87" width="87" backgroundAlpha="0">
+							<s:VGroup verticalCenter="0" horizontalCenter="0">
+								<s:CheckBox id="drawToolChangerCheckBox" selected="true" scaleX="1.5" scaleY="1.5"
+											toolTip="Toogle draw widget" 
+											click="drawToolChangerCheckBox_clickHandler(event)" />
+								<s:Label text="Draw Widget" color="white" />
+							</s:VGroup>							
+						</s:BorderContainer>						
+					</s:HGroup>
+					
+					<!-- Find Places HGroup -->
+					<s:HGroup id="findPlacesHGroup" visible="false" includeInLayout="false">
+						<s:BorderContainer backgroundAlpha="0" width="160" height="87">
+							<s:VGroup verticalCenter="0" horizontalCenter="0">
+								<s:TextInput id="findPlaceTextInput" width="150" prompt="100 Stout Street, Denver, CO" />
+							</s:VGroup>							
+						</s:BorderContainer>
+						<s:Button label="Go" width="87" height="87" click="findPlaceClickHandler()" skinClass="skins.CustomButtonSkin" />
+						<s:Button label="Clear" width="87" height="87" click="{map.pointLayer.clear()}" skinClass="skins.CustomButtonSkin" />
+					</s:HGroup>
+					
+					<!-- Directions HGroup -->
+					<s:HGroup id="findDirectionsHGroup" visible="false" includeInLayout="false">
+						<s:BorderContainer backgroundAlpha="0" width="160" height="87">
+							<s:VGroup verticalCenter="0" horizontalAlign="center">
+								<s:Label text="Begin Address" color="white"/>
+								<s:TextInput id="directionsStart" width="150" prompt="Denver, CO" />
+							</s:VGroup>							
+						</s:BorderContainer>
+						<s:BorderContainer backgroundAlpha="0" width="160" height="87">
+							<s:VGroup verticalCenter="0" horizontalAlign="center">
+								<s:Label text="End Address" color="white"/>
+								<s:TextInput id="directionsEnd" width="150" prompt="Colorado Springs, CO" />
+							</s:VGroup>							
+						</s:BorderContainer>
+						<s:Button label="Go" width="87" height="87" click="directionsClickHandler()" skinClass="skins.CustomButtonSkin" />
+						<s:Button label="Clear" width="87" height="87" click="clearGraphics_clickHandler()" skinClass="skins.CustomButtonSkin" />
+					</s:HGroup>
+					
+				</s:HGroup>
+			
+			</s:HGroup>
+	
+		</s:BorderContainer>
+	</s:VGroup>
+	
+	<!-- DrawTool Widget -->
+	<widgets:DrawToolButtonBarWidget id="drawToolButtonBarPanel" visible="false" 
+									 height="39" top="60" right="10"
+									 styleName="basicContainerStyle" drawEnd="drawToolButtonBarPanel_drawCompleteHandler(event)"
+									 map="{map}" graphicsLayer="{map.pointLayer}"  />	
+	<!--
+	<s:Panel id="findPlacePanel" styleName="basicContainerStyle" height="100" width="200" 
+			 visible="false" title="Enter a place or address">
+		<s:layout>
+			<s:VerticalLayout paddingTop="10" horizontalAlign="center"/>
+		</s:layout>
+		<s:TextInput id="findPlaceTextInput1" width="90%" prompt="100 Stout Street, Denver, CO" />
+		<s:Button label="Go" bottom="5" click="findPlaceClickHandler()"  />
+	</s:Panel>
+	
+	<s:Panel id="directionsPanel" styleName="basicContainerStyle" height="130" width="200" 
+			 visible="false" title="Get Directions">
+		<s:layout>
+			<s:VerticalLayout paddingTop="10" horizontalAlign="center"/>
+		</s:layout>
+		<s:TextInput id="directionsStart" width="90%" prompt="Start location" />
+		<s:TextInput id="directionsEnd" width="90%" prompt="End location" />
+		<s:Button label="Go" click="directionsClickHandler()"  />
+	</s:Panel>	
+	-->
+	
+	<s:BorderContainer id="codePanel" width="500" height="400" backgroundAlpha="0.6" 
+					   right="-475" verticalCenter="0"
+					   backgroundColor="#000000" borderColor="black" borderStyle="solid" 
+					   cornerRadius="10"
+					   rollOver="panel_rollOverHandler(event)"
+					   rollOut="panel_rollOutHandler(event)">		
+		<s:HGroup height="100%" width="100%">	
+			<s:Label width="20" height="100%" 
+					 text="Code" color="white" rotation="-90" verticalAlign="middle" textAlign="center" />
+			<mx:Text id="codeText" color="black" height="100%" width="100%" 
+					 paddingTop="20" paddingBottom="20"
+					 opaqueBackground="0xFFFFFF"/>
+		</s:HGroup>		  
+	</s:BorderContainer>	
+	
+	<local:DirectionsDisplayWidget id="directionsDisplayWidget" top="90" left="10" backgroundAlpha="0.7" color="white"
+								   map="{map}" visible="false" includeInLayout="false"/>
+	
+</s:Application>

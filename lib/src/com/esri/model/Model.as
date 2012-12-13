@@ -21,15 +21,19 @@ import mx.collections.ArrayList;
 
 public final class Model
 {
-    public const polygonArrCol:ArrayCollection = new ArrayCollection();
+    [Bindable]
+	public var polygonArrCol:ArrayCollection = new ArrayCollection();
+	
+	[Bindable]
+    public var polylineArrCol:ArrayCollection = new ArrayCollection();
 
-    public const polylineArrCol:ArrayCollection = new ArrayCollection();
-
-    public const pointArrCol:ArrayCollection = new ArrayCollection();
+    [Bindable]
+	public var pointArrCol:ArrayCollection = new ArrayCollection();
 
     public var requestTimeout:int = 30; // In Seconds
 
-    public var locatorURL:String = 'http://tasks.arcgisonline.com/ArcGIS/rest/services/Locators/TA_Address_NA_10/GeocodeServer';
+    public var locatorURL:String = 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer';
+
     public var locatorKey:String = 'SingleLine';
     public var locatorVal:String = 'Match_addr';
 

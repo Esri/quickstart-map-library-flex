@@ -37,6 +37,7 @@
         <model:Model id="model"/>
         <!-- View declaration -->
         <views:BaseLayerView id="baseLayerView"
+							 skinClass="com.esri.skins.BaseLayerViewSkin"
                              right="10" top="10"
                              model="{model}"/>
         <views:OpenStreetMapText id="openStreetMapText"
@@ -55,18 +56,22 @@
         <controllers:DriveTimeController id="driveTimeController"
                                          map="{this}"
                                          model="{model}"/>
+		<controllers:HTML5GeolocationController id="geolocationController"
+												map="{this}"
+												model="{model}"/>
     </fx:Declarations>
     <fx:Script>
         <![CDATA[
-            import com.esri.ags.Graphic;
-            import com.esri.ags.geometry.MapPoint;
-            import com.esri.ags.geometry.WebMercatorMapPoint;
-            import com.esri.ags.symbols.Symbol;
-
-            import mx.core.UIComponent;
-            import mx.rpc.Fault;
-            import mx.rpc.IResponder;
-            import mx.rpc.events.FaultEvent;
+			import com.esri.ags.Graphic;
+			import com.esri.ags.events.LayerEvent;
+			import com.esri.ags.geometry.MapPoint;
+			import com.esri.ags.geometry.WebMercatorMapPoint;
+			import com.esri.ags.symbols.Symbol;
+			
+			import mx.core.UIComponent;
+			import mx.rpc.Fault;
+			import mx.rpc.IResponder;
+			import mx.rpc.events.FaultEvent;
 
             /**
              * @private
@@ -85,15 +90,15 @@
              * @param mapType The map type (eg. MapType.STREETS).
              * @see MapType
              */
-            public function setMapType(mapType:String):void
+            public function setBasemap(mapType:String):void
             {
-                mapTypeController.setMapType(mapType);
+                mapTypeController.setBasemap(mapType);
             }
 
             /**
              * Center the map at a specific location.
              *
-             * @param location The center location. Can be an instance of MapPoint or an array of two points where the first item is the latitude and the second is the longitude.
+             * @param location The center location. Can be an instance of MapPoint or an array of two numbers where the first item is the latitude and the second is the longitude.
              * @param zoomLevel [optional] The zoom level
              * @param mapType [optional] The map type (eg. MapType.STREETS)
              *
@@ -123,7 +128,7 @@
                     }
                 }
                 this.level = zoomLevel;
-                mapTypeController.setMapType(mapType);
+                mapTypeController.setBasemap(mapType);
             }
 
             /**
@@ -290,12 +295,9 @@
              * Invokes Geolocation API to locate where you are.
              * @param zoomLevel the zoomLevel. A value of zero shows the world,
              */
-            public function whereAmI(zoomLevel:int = 16):void
+            public function centerAtMyLocation(zoomLevel:int = 16):void
             {
-                if (hasEventListener(FaultEvent.FAULT))
-                {
-                    dispatchEvent(new FaultEvent(FaultEvent.FAULT, false, true, new Fault('geoLocationNotSupported', 'Geolocation is not supported')));
-                }
+                geolocationController.whereAmI(zoomLevel);
             }
 
             /**
@@ -310,11 +312,12 @@
             {
                 driveTimeController.calculateDriveTimePolygon(fromLocation, driveTimesInMinutes, responder);
             }
-        ]]>
+			
+		]]>
     </fx:Script>
     <!-- Base layers -->
-    <esri:ArcGISTiledMapServiceLayer id="arcgisTiledMapServiceLayer"
-                                     url="{model.arcgisTiledMapServiceLayerURL}"
+    <esri:ArcGISTiledMapServiceLayer id="arcgisTiledMapServiceLayer" 
+									 url="{model.arcgisTiledMapServiceLayerURL}"
                                      visible="{model.arcgisTiledMapServiceLayerVisible}"/>
     <esri:OpenStreetMapLayer id="openStreetMap" visible="{model.openStreetMapLayerVisible}"/>
     <!-- Polygon layer -->

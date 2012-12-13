@@ -35,6 +35,7 @@ import com.esri.model.Model;
 
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
 import mx.core.IMXMLObject;
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
@@ -58,7 +59,9 @@ public final class RouteController implements IMXMLObject
 
     public function route(source:Array, zoomFactor:Number, responder:IResponder):void
     {
-        const counter:Counter = new Counter();
+        model.pointArrCol = new ArrayCollection(); 
+		
+		const counter:Counter = new Counter();
         if (source === null && model.pointArrCol.length)
         {
             doRoute(zoomFactor, responder, counter);
@@ -114,7 +117,7 @@ public final class RouteController implements IMXMLObject
             if (locator.addressToLocationsLastResult && locator.addressToLocationsLastResult.length)
             {
                 const addrCand:AddressCandidate = locator.addressToLocationsLastResult[0];
-                const graphic:Graphic = new Graphic(addrCand.location, null, addrCand.attributes);
+                const graphic:Graphic = new Graphic(addrCand.location, null, {address: addrCand.address, score: addrCand.score});
                 graphic.toolTip = addrCand.attributes[model.locatorVal];
                 model.pointArrCol.addItem(graphic);
             }
@@ -143,7 +146,7 @@ public final class RouteController implements IMXMLObject
         {
             return;
         }
-        const routeParameters:RouteParameters = new RouteParameters();
+        var routeParameters:RouteParameters = new RouteParameters();
         routeParameters.stops = toFeatureSet(); // new FeatureSet(model.pointArrCol.source);
         routeParameters.outSpatialReference = map.spatialReference;
         routeParameters.returnDirections = true
@@ -151,7 +154,7 @@ public final class RouteController implements IMXMLObject
         routeParameters.ignoreInvalidLocations = false;
         routeParameters.doNotLocateOnRestrictedElements = false;
 
-        const routeTask:RouteTask = new RouteTask(model.routeTaskURL);
+        var routeTask:RouteTask = new RouteTask(model.routeTaskURL);
         routeTask.showBusyCursor = true;
         routeTask.requestTimeout = model.requestTimeout;
         routeTask.addEventListener(FaultEvent.FAULT, faultHandler);

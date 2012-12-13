@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	Custom widget for displaying driving direction results.
+	@param map <code>com.esri.ags.Map</code> Required
+-->
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   backgroundColor="#382D2C" cornerRadius="5" 
+				   creationComplete="creationCompleteHandler(event)"
+				   width="300" height="410">
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		
+		.RecordCanvas2
+		{
+			borderStyle: solid;
+			borderColor: #FF0000;
+			borderAlpha: 0.5;
+			borderThickness: 1;
+			cornerRadius: 4;
+			backgroundColor: #737373;
+			background-alpha: 0.6;
+		}
+	</fx:Style>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.esri.ags.Graphic;
+			import com.esri.ags.Map;
+			import com.esri.ags.events.RouteEvent;
+			import com.esri.ags.symbols.CartographicLineSymbol;
+			import com.esri.ags.symbols.SimpleLineSymbol;
+			import com.esri.ags.symbols.Symbol;
+			import com.esri.ags.tasks.supportClasses.DirectionsFeatureSet;
+			import com.esri.ags.tasks.supportClasses.RouteResult;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.utils.ObjectProxy;
+			
+			[Bindable]
+			public var map:Map;
+						
+			[Bindable]
+			private var _directionsFS:DirectionsFeatureSet = null;			
+			
+			private var m_overSymbol:Symbol;
+			private var m_outSymbol:Symbol;
+			private var _display:Boolean = false;
+			
+			private function creationCompleteHandler(event:FlexEvent):void
+			{
+				m_overSymbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, 0xFF0000, 0.5, 10);
+				m_outSymbol = new CartographicLineSymbol("solid",0x00FF00,0.5,8,"round");
+				map.addEventListener(RouteEvent.SOLVE_COMPLETE,routeCompleteHandler);
+			}
+			
+			private function routeCompleteHandler(event:RouteEvent):void
+			{
+				_display = true;
+				
+				var routeResult:RouteResult = event.routeSolveResult.routeResults[0];
+				_directionsFS = routeResult.directions;
+				
+				var directionsArr:ArrayCollection = new ArrayCollection();
+				var i:int = 1;
+				
+				for each (var feature:Graphic in _directionsFS.features)
+				{
+					var time:String = "";
+					var length:String = "";
+					
+					if (i > 1 && i < _directionsFS.features.length)
+					{
+						time = 	formatTime(feature.attributes.time);
+						length = formatDistance(feature.attributes.length, "miles");
+					}
+					
+					directionsArr.addItem(new ObjectProxy(
+						{	
+							number: i,
+							text: feature.attributes.text,
+							time: time,
+							length: length,
+							feature: feature
+						}
+					));
+					
+					i++;
+				}
+				
+				repeat.dataProvider = directionsArr;
+			}
+			
+			private function formatDistance(dist:Number, units:String):String
+			{
+				var result:String = "";
+				
+				var d:Number = Math.round(dist * 100) / 100;
+				
+				if (d != 0)
+				{
+					result = d + " " + units;
+				}
+				
+				return result;
+			}
+			
+			private function formatTime(time:Number):String
+			{
+				var result:String;
+				
+				var hr:Number = Math.floor(time / 60);
+				var min:Number = Math.round(time % 60);
+				
+				if (hr < 1 && min < 1)
+				{
+					result = "";
+				}
+				else if (hr < 1 && min < 2)
+				{
+					result = min + " minute";
+				}
+				else if (hr < 1)
+				{
+					result = min + " minutes";
+				}
+				else
+				{
+					result = hr + " hour(s) " + min + " minute(s)";
+				}
+				
+				return result;
+			}
+			
+			private function drivingDirections_rollOverHandler(event:MouseEvent):void
+			{
+				const obj:Object = event.currentTarget.getRepeaterItem();
+				var graphic:Graphic = null;
+				
+				if(obj != null)
+				{
+					graphic = obj.feature;
+				}
+
+				if(graphic != null)
+				{
+					//graphic.graphicsLayer.symbol = m_overSymbol;
+					graphic.symbol = m_overSymbol;
+					map.extent = graphic.geometry.extent.expand(1.5);
+				}
+			}
+			
+			private function drivingDirections_rollOutHandler(event:MouseEvent):void
+			{
+				const obj:Object = event.currentTarget.getRepeaterItem();
+				var graphic:Graphic = null;
+				
+				if(obj != null)
+				{
+					graphic = obj.feature;
+				}
+				
+				if(graphic != null)
+				{
+					graphic.symbol = null;
+				}
+			}
+			
+			private function image1_clickHandler(event:MouseEvent):void
+			{
+				this.visible = false;
+				_display = false;
+			}
+			
+			/**
+			 * Indicates if directions widget has been populated or not
+			 */
+			public function get display():Boolean
+			{
+				return _display;
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Image source="@Embed('assets/i_draw_xcircle.png')" height="16" width="16" right="3" top="3" 
+			 useHandCursor="true" click="image1_clickHandler(event)"/>
+	<mx:VBox id="displayDrivingDirections" height="380" width="280" horizontalAlign="left" top="20" 
+			 horizontalScrollPolicy="off" horizontalCenter="0" >
+		<mx:Text fontSize="12" text=" Distance: {formatDistance(_directionsFS.totalLength, 'miles')} Time: {formatTime(_directionsFS.totalTime)}" alpha="0.9" />
+			<mx:Repeater id="repeat">
+				<mx:VBox width="100%"						
+						 minHeight="30"
+						 backgroundAlpha="0.8"
+						 styleName="RecordCanvas2" 
+						 borderStyle="solid"
+						 borderColor="Gray"
+						 paddingLeft="3"
+						 horizontalGap="3"
+						 rollOver="drivingDirections_rollOverHandler(event)"
+						 rollOut="drivingDirections_rollOutHandler(event)">
+					<mx:HBox width="100%" height="100%">
+						<mx:Text textAlign="left" fontSize="14" htmlText="{repeat.currentItem.number}" />
+						<mx:Text textAlign="left" fontSize="10" width="100%"  htmlText="{repeat.currentItem.text}" />
+					</mx:HBox>					
+					<mx:Text textAlign="right" fontSize="8" width="100%" 
+							 text="{repeat.currentItem.length}, {repeat.currentItem.time}" />
+				</mx:VBox>				
+			</mx:Repeater>					
+	</mx:VBox>
+
+</s:BorderContainer>

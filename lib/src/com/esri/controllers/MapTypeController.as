@@ -38,10 +38,10 @@ public final class MapTypeController
 
     private function baseLayerHandler(baseLayer:BaseLayer):void
     {
-        setMapType(baseLayer.mapType);
+        setBasemap(baseLayer.mapType);
     }
 
-    public function setMapType(mapType:String):void
+    public function setBasemap(mapType:String):void
     {
         if (mapType === MapType.OPEN_STREET_MAP)
         {
