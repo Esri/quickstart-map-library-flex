@@ -1,8 +1,8 @@
 # ArcGIS API Lite for Flex
 
-Open Source Initiative Project
+This library provides an open source framework and sample apps for getting started with the ArcGIS API for Flex.
 
-Version: Draft v2
+Version: v2
 
 The ArcGIS API Lite for Flex enables you to embed mapping capabilities into
 your Flex projects very easily. It rivals in simplicity with other popular mapping
