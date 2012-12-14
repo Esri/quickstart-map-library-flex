@@ -10,7 +10,7 @@ APIs such as those from Google, Yahoo, etc, and provides a comprehensive collect
 maps to utilize (Topographic and Street maps, Imagery, Shaded Relief, etc) in your
 projects. It also offers unique analytical capabilities such as calculating drive-time polygons and others.
 This API is available as a developer sample under the Apache 2.0 license and can
-be downloaded from Github. The ArcGIS API Lite for Flex is built as a framework library around the
+be downloaded from GitHub. The ArcGIS API Lite for Flex is built as a framework library around the
 powerful ArcGIS API for Flex, a more advanced API for building GIS web applications.
 
 ## Common Questions:
