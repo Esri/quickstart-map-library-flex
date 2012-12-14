@@ -41,7 +41,7 @@ average non-GIS expert into the great opportunities that GIS has to offer.
 
 ## Requirements
 
-* [Adobe Flashbuilder](http://www.adobe.com/products/flash-builder.html)
+* [Adobe Flash Builder](http://www.adobe.com/products/flash-builder.html)
 * [ArcGIS API for Flex](http://resources.arcgis.com/en/communities/flex-api/)
 * Some experience with Flex and ActionScript development
 
