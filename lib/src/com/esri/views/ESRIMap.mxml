@@ -37,9 +37,9 @@
         <model:Model id="model"/>
         <!-- View declaration -->
         <views:BaseLayerView id="baseLayerView"
-							 skinClass="com.esri.skins.BaseLayerViewSkin"
                              right="10" top="10"
-                             model="{model}"/>
+                             model="{model}"
+                             skinClass="com.esri.skins.BaseLayerViewSkin"/>
         <views:OpenStreetMapText id="openStreetMapText"
                                  includeInLayout="{model.openStreetMapLayerVisible}"
                                  visible="{model.openStreetMapLayerVisible}"/>
@@ -56,22 +56,22 @@
         <controllers:DriveTimeController id="driveTimeController"
                                          map="{this}"
                                          model="{model}"/>
-		<controllers:HTML5GeolocationController id="geolocationController"
-												map="{this}"
-												model="{model}"/>
+        <controllers:HTML5GeolocationController id="geolocationController"
+                                                map="{this}"
+                                                model="{model}"/>
     </fx:Declarations>
     <fx:Script>
         <![CDATA[
-			import com.esri.ags.Graphic;
-			import com.esri.ags.events.LayerEvent;
-			import com.esri.ags.geometry.MapPoint;
-			import com.esri.ags.geometry.WebMercatorMapPoint;
-			import com.esri.ags.symbols.Symbol;
-			
-			import mx.core.UIComponent;
-			import mx.rpc.Fault;
-			import mx.rpc.IResponder;
-			import mx.rpc.events.FaultEvent;
+            import com.esri.ags.Graphic;
+            import com.esri.ags.events.LayerEvent;
+            import com.esri.ags.geometry.MapPoint;
+            import com.esri.ags.geometry.WebMercatorMapPoint;
+            import com.esri.ags.symbols.Symbol;
+
+            import mx.core.UIComponent;
+            import mx.rpc.Fault;
+            import mx.rpc.IResponder;
+            import mx.rpc.events.FaultEvent;
 
             /**
              * @private
@@ -312,12 +312,11 @@
             {
                 driveTimeController.calculateDriveTimePolygon(fromLocation, driveTimesInMinutes, responder);
             }
-			
-		]]>
+        ]]>
     </fx:Script>
     <!-- Base layers -->
-    <esri:ArcGISTiledMapServiceLayer id="arcgisTiledMapServiceLayer" 
-									 url="{model.arcgisTiledMapServiceLayerURL}"
+    <esri:ArcGISTiledMapServiceLayer id="arcgisTiledMapServiceLayer"
+                                     url="{model.arcgisTiledMapServiceLayerURL}"
                                      visible="{model.arcgisTiledMapServiceLayerVisible}"/>
     <esri:OpenStreetMapLayer id="openStreetMap" visible="{model.openStreetMapLayerVisible}"/>
     <!-- Polygon layer -->

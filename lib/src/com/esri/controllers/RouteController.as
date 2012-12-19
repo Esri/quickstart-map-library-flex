@@ -59,9 +59,9 @@ public final class RouteController implements IMXMLObject
 
     public function route(source:Array, zoomFactor:Number, responder:IResponder):void
     {
-        model.pointArrCol = new ArrayCollection(); 
-		
-		const counter:Counter = new Counter();
+        model.pointArrCol = new ArrayCollection();
+
+        const counter:Counter = new Counter();
         if (source === null && model.pointArrCol.length)
         {
             doRoute(zoomFactor, responder, counter);
@@ -117,7 +117,7 @@ public final class RouteController implements IMXMLObject
             if (locator.addressToLocationsLastResult && locator.addressToLocationsLastResult.length)
             {
                 const addrCand:AddressCandidate = locator.addressToLocationsLastResult[0];
-                const graphic:Graphic = new Graphic(addrCand.location, null, {address: addrCand.address, score: addrCand.score});
+                const graphic:Graphic = new Graphic(addrCand.location, null, { address: addrCand.address, score: addrCand.score });
                 graphic.toolTip = addrCand.attributes[model.locatorVal];
                 model.pointArrCol.addItem(graphic);
             }
@@ -232,8 +232,8 @@ public final class RouteController implements IMXMLObject
             map.dispatchEvent(event);
         }
     }
-
 }
+
 }
 
 final class Counter

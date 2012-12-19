@@ -22,13 +22,13 @@ import mx.collections.ArrayList;
 public final class Model
 {
     [Bindable]
-	public var polygonArrCol:ArrayCollection = new ArrayCollection();
-	
-	[Bindable]
+    public var polygonArrCol:ArrayCollection = new ArrayCollection();
+
+    [Bindable]
     public var polylineArrCol:ArrayCollection = new ArrayCollection();
 
     [Bindable]
-	public var pointArrCol:ArrayCollection = new ArrayCollection();
+    public var pointArrCol:ArrayCollection = new ArrayCollection();
 
     public var requestTimeout:int = 30; // In Seconds
 
@@ -58,4 +58,5 @@ public final class Model
     {
     }
 }
+
 }

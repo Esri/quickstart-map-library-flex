@@ -61,7 +61,7 @@ public final class LocateController
         const locator:Locator = new Locator(model.locatorURL);
         locator.outSpatialReference = map.spatialReference;
         locator.requestTimeout = model.requestTimeout;
-        locator.showBusyCursor = true; 
+        locator.showBusyCursor = true;
         locator.addEventListener(FaultEvent.FAULT, faultHandler);
         locator.addEventListener(LocatorEvent.ADDRESS_TO_LOCATIONS_COMPLETE, locator_addressToLocationsCompleteHandler);
         locator.addressToLocations(addressToLocationsParameters);
@@ -202,6 +202,6 @@ public final class LocateController
         }
         return m_addrSymbol;
     }
-
 }
+
 }
